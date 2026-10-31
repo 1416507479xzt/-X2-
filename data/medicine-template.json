@@ -1,0 +1,18 @@
+{
+  "_note": "独立填写模板，不会自动加载。请用真实说明书替换占位文字，核对后再放入life_assistance.json的medicines数组。reviewed不是医学认证。",
+  "name": "填写药品完整通用名",
+  "strength": "填写药盒规格",
+  "form": "填写剂型，保留缓释或控释等区别",
+  "manufacturer": "填写生产企业",
+  "aliases": [],
+  "source": "填写说明书文件来源或官方链接及版本",
+  "reviewed": false,
+  "reviewed_on": "",
+  "population": "",
+  "usage": "",
+  "precautions": "",
+  "contraindications": "",
+  "interactions": "",
+  "missed_dose": "",
+  "administration_notes": ""
+}

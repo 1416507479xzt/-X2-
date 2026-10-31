@@ -1,0 +1,153 @@
+# Agent vocal d’exemple
+
+[中文](../zh-CN/README.md) | [English](../en/README.md) | **Français**
+
+Ces clients Python se connectent à la passerelle Unity par WebSocket. `agent.py` utilise les services vocaux Doubao et Volcengine Ark pour les conversations et les actions. `demo.py` vérifie la connexion et la lecture avec du texte fixe et des enregistrements, remplacés par un signal sinusoïdal si l’audio est absent ou invalide.
+
+Les commandes ci-dessous s’exécutent dans le dossier `example/x2_agent/` du dépôt, avec Windows PowerShell. Sous Linux/macOS, utilisez `python3` si nécessaire ; le simulateur portable fourni fonctionne sous Windows.
+
+## Organisation
+
+Ce projet Agent est autonome et lit son propre fichier `.env`. La console graphique est un projet
+distinct ; voir le [guide de la console](../../../../docs/fr/console.md).
+
+| Chemin | Responsabilité |
+|---|---|
+| `agent.py` / `demo.py` | Scripts de lancement de l’agent vocal et de la démo hors ligne |
+| `requirements.txt` | Dépendances tierces |
+| `x2_agent/agent.py` | Sessions, historique, commandes et arguments CLI |
+| `x2_agent/asr.py` | Envoi audio pendant l’enregistrement, reconnaissance et annulation |
+| `x2_agent/llm.py` | Réponses LLM en flux et réutilisation des connexions |
+| `x2_agent/tts.py` | Synthèse vocale bidirectionnelle en flux |
+| `x2_agent/sentence_tts.py` | Mode de repli par phrase |
+| `x2_agent/speech_protocol.py` | Trames binaires Doubao V3 |
+| `x2_agent/gateway.py` | Événements Unity, authentification HMAC et enveloppes |
+| `x2_agent/demo.py` | Démo hors ligne de la passerelle |
+| `x2_agent/config.py`, `audio.py` | Configuration, fichiers WAV et troncature des journaux |
+| `tests/` | Tests locaux ASR, chaîne vocale et configuration |
+| `.env.example` | Modèle public à copier dans un fichier `.env` privé |
+
+## Installation et lancement
+
+Python 3.10+ est requis. Pour les conversations réelles, activez Volcengine Speech (ASR/TTS) et Ark (LLM). Dans PowerShell, depuis le dossier `example/x2_agent/` du dépôt :
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Choisissez une méthode pour lancer le robot :
+
+- **Simulateur portable :** téléchargez et lancez l’EXE Windows depuis GitHub Releases ; consultez le [guide du simulateur](../../../../docs/fr/simulator.md).
+- **Depuis le projet Unity :** ouvrez `unity-agent-playground/` avec Unity **2022.3.62f3c1**, ouvrez `Assets/X02Competition/Scenes/scene.unity` puis cliquez sur Play ; consultez le [guide Unity](../../../../docs/fr/unity.md).
+
+Les deux méthodes utilisent le port local `9002` ; ne lancez qu’une instance du robot. Lancez ensuite un seul Agent depuis `example/x2_agent/` :
+
+```powershell
+python demo.py
+```
+
+Attendez `state=online` et la fin de l’accueil, puis parlez pour vérifier la réponse fixe et la lecture audio. Arrêtez la démo avec **Ctrl+C** avant de configurer les conversations réelles :
+
+```powershell
+# Conserver un éventuel .env existant
+if (-not (Test-Path .env)) { Copy-Item .env.example .env }
+# Renseigner DOUBAO_SPEECH_API_KEY et ARK_API_KEY dans .env
+python agent.py
+```
+
+Conservez `x2_agent/` à côté des scripts et utilisez le même environnement Python pour installer les dépendances et les exécuter. Depuis la racine du dépôt, utilisez `python example/x2_agent/agent.py` ; la configuration par défaut reste `example/x2_agent/.env`.
+
+Pour une connexion distante, utilisez `--host <adresse> --port 9002` et vérifiez que la passerelle écoute sur une adresse réseau accessible. Ces options ne modifient pas l’écoute locale par défaut de Unity.
+
+Le journal `agent 会话就绪 state=online` confirme la connexion. Attendez la fin de l’accueil avant de parler. Après commit, l’écoute reste suspendue pendant le traitement ASR/LLM et la lecture TTS. Elle reprend à la fin de la réponse, lors d’une interruption explicite, après une reconnaissance vide ou un échec, ou après 90 secondes sans progression. Le prompt et la voix par défaut utilisent le chinois.
+
+## Commandes du robot
+
+Les phrases ci-dessous nécessitent `agent.py` ; le modèle choisit les actions selon la demande. La démo ne reconnaît pas les commandes vocales. Sans service cloud, utilisez les boutons F1 ou l’option `--skill` de la démo.
+
+- « 挥挥手 », « 张开双臂 » : saluer et ouvrir les bras (`wave_hands`, `open_arms`).
+- « 往前走一米 », « 向左转 », « 停 » : avancer, tourner et s’arrêter après reconnaissance et envoi de la commande. Pendant la lecture, utilisez le bouton d’arrêt ou une interruption explicite.
+- Les demandes d’expressions heureuses, tristes ou surprises changent le visage. Le protocole prévoit aussi une expression neutre.
+- **F1** ouvre le panneau Unity, dont les boutons fonctionnent sans clé cloud.
+
+La bouche suit la lecture vocale. Consultez le [tableau des actions du protocole](../../../../docs/fr/interface.md) pour les noms et paramètres.
+
+Les options `--reply` et `--greeting` changent les sous-titres, pas les enregistrements. Les fichiers `x2_agent/greeting.wav` et `x2_agent/tts.wav` sont envoyés par tranches de 200 ms.
+
+## Configuration
+
+La configuration se charge au lancement, jamais à l’import. Priorité : arguments CLI > variables d’environnement existantes > `.env` > valeurs par défaut. Les scripts lisent par défaut le `.env` à la racine du projet `example/x2_agent/`. Utilisez `--env-file` avec le chemin de votre fichier de configuration pour le remplacer ; son absence déclenche une erreur.
+
+| Variable | Requise pour Doubao | Valeur par défaut / rôle |
+|---|---|---|
+| `DOUBAO_SPEECH_API_KEY` | Oui | Clé Speech commune à ASR et TTS |
+| `ARK_API_KEY` | Oui | Clé LLM Ark |
+| `DOUBAO_LLM_MODEL` | Non | `doubao-seed-2-0-mini-260428` |
+| `DOUBAO_TTS_SPEAKER` | Non | `zh_female_wanqudashu_moon_bigtts`, compatible avec `seed-tts-1.0` |
+| `DOUBAO_ASR_RESOURCE_ID` | Non | `volc.bigasr.sauc.duration` |
+
+Copiez [`.env.example`](../../.env.example) pour votre configuration locale. Ne versionnez pas les clés ; le [`.gitignore`](../../../../.gitignore) exclut les fichiers `.env`.
+
+## Paramètres utiles
+
+Configurez les services avec `ARK_API_URL`, `ASR_WS_URL`, `TTS_WS_URL` et
+`TTS_SENTENCE_WS_URL`, ou avec les options prioritaires `--ark-api-url`,
+`--asr-ws-url`, `--tts-ws-url` et `--tts-sentence-ws-url`. Les deux modes TTS
+utilisent des adresses distinctes. Le fichier `skills.yaml` définit les outils,
+la validation des paramètres et les messages de confirmation ; `--skills-file` sélectionne un autre fichier.
+`--log-level` et `--log-file` contrôlent les journaux d’orchestration Python.
+`--metrics-file` exporte les compteurs et les statistiques des 1000 dernières durées
+par mesure à l’arrêt normal ou par Ctrl+C. Ces durées excluent l’enregistrement humain ;
+le compteur de commandes envoyées ne garantit pas leur exécution. Les journaux Unity
+restent affichés dans le terminal.
+
+Depuis le dossier `example/x2_agent/` du dépôt, avec le Python de votre environnement virtuel :
+
+```powershell
+python agent.py --help
+python agent.py --system-prompt "Tu es un guide robot qui répond brièvement."
+python agent.py --save-audio reply.wav --save-input input.wav
+python agent.py --asr-after-commit
+python agent.py --llm-model doubao-seed-2-1-turbo-260628
+python agent.py --tts-mode sentence
+python agent.py --greeting "你好"
+python agent.py --greeting=
+python demo.py --reply "Bonjour"
+python demo.py --skill gesture/wave_hands
+python demo.py --interrupt chat
+```
+
+Par défaut, l’audio ASR est envoyé pendant l’enregistrement, les connexions LLM sont réutilisées et le texte alimente directement une session TTS bidirectionnelle. `--asr-after-commit` retarde l’envoi à des fins de comparaison ; `--tts-mode sentence` active le mode par phrase. Choisissez le modèle avec `--llm-model` ou `DOUBAO_LLM_MODEL` dans `.env`.
+
+## Dépannage
+
+| Symptôme | Vérification |
+|---|---|
+| Connexion refusée | Lancer l’EXE ou passer en mode Play ; vérifier hôte et port. À distance, la passerelle doit aussi écouter sur une adresse réseau accessible |
+| HTTP 401 | Identifiants, signature et horodatage si l’authentification stricte est activée |
+| HTTP 503 | La limite de connexions de la passerelle est atteinte (huit par défaut) |
+| Geste annoncé mais non exécuté / `4091` | Si une console manuelle est connectée, cédez son contrôle des actions dans l’onglet sessions. Sa priorité reste 1000. Vérifiez que l’agent détient le contrôle et que l’action renvoie `running` puis `done` |
+| Aucune transcription | Microphone coupé, volume d’entrée et durée de l’enregistrement |
+| Attente après la parole | Distinguez la durée start→commit, l’attente ASR après commit, le premier jeton LLM et le premier audio TTS ; le temps de détection du silence ne fait pas partie du traitement ASR |
+| LLM 404 | Identifiant complet du modèle, avec date, ou point d’accès `ep-...` |
+| TTS 403 | Autorisation et compatibilité voix/ressource ; une voix 2.0 ne correspond pas à `seed-tts-1.0` |
+| Réponse inaudible | Périphérique et volume de sortie Windows ; journaux TTS et fichier `--save-audio` |
+
+## Tests et développement
+
+Depuis `example/x2_agent/`, utilisez le même environnement Python que pour l’installation des dépendances :
+
+```powershell
+python -B -m unittest discover -s tests -v
+```
+
+Les tests utilisent des services simulés locaux, sans Unity ni API cloud.
+
+Voir le [protocole](../../../../docs/fr/interface.md), le [guide de développement](../../../../docs/fr/development.md) et le [guide de contribution](../../../../docs/fr/CONTRIBUTING.md).
+
+## Journaux d’exécution
+
+Les journaux Unity arrivent sous le type `agentsdk.runtime.log` sur la même connexion.
+Les deux clients affichent Info, Warning, Error et les piles d’exception, y compris pendant
+l’accueil et les tours de dialogue. Les pertes et troncatures sont signalées.
+Voir le [protocole](../../../../docs/fr/interface.md) pour les champs et limites de livraison.

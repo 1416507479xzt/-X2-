@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "demo": true,
+  "remind_before_minutes": 30,
+  "medicines": [
+    {
+      "name": "苯磺酸氨氯地平片", "strength": "5mg", "form": "普通片", "manufacturer": "宁夏康亚药业股份有限公司",
+      "source": "https://www.nxkangya.com/index.php?a=show&c=index&catid=12&id=100&m=content （厂家2026-07-10简短处方资料，非完整说明书）",
+      "reviewed": true, "reviewed_on": "2026-10-23", "aliases": [],
+      "population": "仅收录成人高血压用量摘要；老年、虚弱、身材小或肝功能不全者起始量不同。",
+      "usage": "成人高血压通常起始5mg每日一次；老年、虚弱、身材小或肝功能不全者起始2.5mg每日一次。最大10mg每日一次，不是建议用量；个人剂量由医生决定。",
+      "precautions": "可能出现症状性低血压；开始治疗或加量时有心绞痛加重风险；严重肝功能不全需医生谨慎调整。",
+      "contraindications": "对本品成分过敏者禁用。"
+    },
+    {
+      "name": "阿托伐他汀钙片", "strength": "10mg", "form": "薄膜衣片", "manufacturer": "成都恒瑞制药有限公司",
+      "source": "https://www.santao.com.cn/index.php?a=show&c=index&catid=20&id=95&m=content （页面说明书修改日期2026-01-04）",
+      "reviewed": true, "reviewed_on": "2026-10-23", "aliases": [],
+      "population": "成人一般起始用量摘要；特殊病情及合并用药须核对完整说明书，不能用于自行调药。",
+      "usage": "常用起始10mg每日一次，可在一天内任意时间服用，不受进餐影响。剂量须个体化；调整间隔至少4周，最大80mg每日一次不是推荐量。",
+      "precautions": "需关注肌病、横纹肌溶解和肝酶异常风险；合并用药可能需要避免联用或限制剂量，须请医生药师核对。",
+      "missed_dose": "该产品资料记载漏服不补，下一次恢复预定剂量；勿套用其他产品。",
+      "interactions": "环孢素等存在重要联用限制；这里只是提示，并非完整相互作用清单。"
+    }
+  ],
+  "reminders": [
+    {"id": "demo-medication", "date": "daily", "time": "08:00", "kind": "medication", "title": "用药安排核对（演示）", "detail": "虚构演示时间，不是个人医嘱；核对医生开具的用药清单及是否已经服用，不提供药名、剂量，不据此自行服药或补服。"},
+    {"id": "demo-water", "date": "daily", "time": "10:00", "kind": "water", "title": "喝水提醒", "detail": "演示事项，不规定饮水量；个人饮水限制以医嘱为准。"},
+    {"id": "demo-followup", "date": "daily", "time": "09:30", "kind": "appointment", "title": "复诊提醒（演示）", "detail": "每天09:30的虚构复诊提醒，仅供重复演示，未实际预约医院，不代表真实复诊频率；仅提醒老人按安排复诊，不提示准备或携带资料。"},
+    {"id": "demo-activity", "date": "daily", "time": "15:00", "kind": "other", "title": "社区活动安排确认", "detail": "演示事项：向服务人员确认今天的社区活动。"}
+  ]
+}

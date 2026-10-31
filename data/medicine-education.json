@@ -1,0 +1,26 @@
+{
+  "reviewed_on": "2026-10-23",
+  "scope": "英国NHS及美国心脏协会公开资料的类别科普摘要，不是中国批准说明书，不提供个人数值用量；不能据此推荐开始用药或替换药物。",
+  "categories": [
+    {"name":"降压药","aliases":["血压药"],"usage":"按照本人处方规定的时间、频次和剂量规律服用；不同降压药的服用量不相同。","precautions":"不要因为一次血压正常就自行停药或加减量；服后明显头晕应联系医护核对。","boundary":"个人剂量以处方或药师核对结果为准。","source":"https://www.heart.org/en/health-topics/high-blood-pressure/changes-you-can-make-to-manage-high-blood-pressure/managing-high-blood-pressure-medications"},
+    {"name":"降糖药","aliases":["糖尿病药","血糖药"],"usage":"按处方规定的时间和剂量服用；是否随餐、漏服如何处理随药物种类而变。","precautions":"服药期间若呕吐、腹泻或明显不适，应向医护咨询；不能把不同降糖药服法混用。","boundary":"不能凭药物类别决定个人片数或补服量。","source":"https://www.nhs.uk/conditions/type-2-diabetes/treatment/"},
+    {"name":"降脂药","aliases":["血脂药","胆固醇药"],"usage":"按处方规定的时间和剂量服用；不同降脂药服法不相同。","precautions":"不要自行停药，出现不适或要与其他药同服时请医生、药师核对。","boundary":"不能凭类别推断个人剂量。","source":"https://www.heart.org/en/health-topics/cholesterol/prevention-and-treatment-of-high-cholesterol-hyperlipidemia/cholesterol-medications"},
+    {"name":"感冒药","aliases":["感冒冲剂","感冒胶囊","复方感冒药"],"usage":"先按包装说明或医嘱核对服用时间、次数和量；复方感冒药的成分可能重叠，不要把两种药的用法直接相加。","precautions":"部分鼻塞类成分不适合高血压、心脏病等人群，用前请药师核对。","boundary":"只说感冒药不能定个人片数。","source":"https://www.nhs.uk/medicines/decongestants/"},
+    {"name":"止泻药","aliases":["拉肚子药","腹泻药"],"usage":"腹泻时注意补充丢失的水分，若医嘱限水则按医嘱；止泻药种类不同，按包装说明或医嘱核对服法，不自行套用统一剂量。","precautions":"若有血便、发热、明显腹痛或抗生素后严重腹泻，应先联系医护，不要只靠止泻药压症状。","boundary":"个人服法需要结合症状和具体药品核对。","source":"https://www.nhs.uk/medicines/loperamide/who-can-and-cannot-take-loperamide/"},
+    {"name":"止痛药","aliases":["镇痛药","疼痛药"],"usage":"按处方或包装说明核对服用间隔和总量；不同止痛药不能共用一套片数。","precautions":"同时吃感冒药或其他止痛药时，先核对是否含重复成分；已有肝肾问题或长期用药时请药师核对。","boundary":"不能只凭止痛药这一类确定剂量。","source":"https://www.fhft.nhs.uk/patients-and-visitors/patient-information-library/ibuprofen-and-paracetamol-advice-sheet/submit/7561"},
+    {"name":"胃药","aliases":["抑酸药","胃酸药"],"usage":"胃药包含不同作用的药，饭前还是饭后、服用频次均应按处方或包装说明核对。","precautions":"有些制酸药会影响其他药的作用，正在服多种药时先问药师如何错开。","boundary":"不能把所有胃药都说成同一种吃法。","source":"https://www.nhs.uk/medicines/antacids/"},
+    {"name":"通便药","aliases":["便秘药","泻药"],"usage":"剂型和起效方式不同，按包装说明或处方核对服用时间和用量。","precautions":"若有个人饮水限制，不能照搬一般多喝水建议；持续便秘或腹痛应咨询医护。","boundary":"不能只凭通便药类别确定个人用量。","source":"https://www.nhs.uk/medicines/laxatives/"},
+    {"name":"抗过敏药","aliases":["过敏药","抗组胺药"],"usage":"片剂、滴眼液和鼻喷剂的用法不同，按处方或包装说明核对服用时间、方式和量。","precautions":"有些抗过敏药会让人困倦，老人服后起身、行走要留意，合用其他药前先问药师。","boundary":"不能凭类别决定个人剂量。","source":"https://www.nhs.uk/medicines/antihistamines/"},
+    {"name":"抗生素","aliases":["抗菌药"],"usage":"仅在医生开具时按处方完成规定疗程；不同抗生素的服用间隔和剂量不一样。","precautions":"感冒不等于需要抗生素，不能自行拿旧药服用；出现不良反应或漏服请按说明书并联系医护。","boundary":"不能凭类别自行决定是否服用或具体剂量。","source":"https://www.nhs.uk/medicines/antibiotics/"}
+  ],
+  "entries": [
+    {"name": "氨氯地平", "category": "血压及心绞痛用药", "summary": "用于高血压和心绞痛；具体服用量由开药医生确定。", "source": "https://www.nhs.uk/medicines/amlodipine/"},
+    {"name": "氯沙坦", "category": "血压及心衰用药", "summary": "用于高血压，也用于心衰及2型糖尿病相关肾病；不能自行停用。", "source": "https://www.nhs.uk/medicines/losartan/"},
+    {"name": "比索洛尔", "category": "血压及心脏用药", "summary": "属于β受体阻滞剂，用于高血压、心绞痛，也可与其他药合用于心衰。", "source": "https://www.nhs.uk/medicines/bisoprolol/"},
+    {"name": "二甲双胍", "category": "降糖用药", "summary": "可用于2型糖尿病，帮助降低血糖；此摘要不含任何具体剂型的用法用量。", "source": "https://www.nhs.uk/medicines/metformin/"},
+    {"name": "阿托伐他汀", "category": "调脂用药", "summary": "用于高胆固醇及降低心血管事件风险；不能仅凭名称判断个人所需剂量。", "source": "https://www.nhs.uk/medicines/atorvastatin/"},
+    {"name": "阿司匹林", "category": "抗血小板或镇痛用药", "summary": "低剂量规律使用预防血栓和较高剂量镇痛用途不同；用量取决于用途，不可相互套用。", "source": "https://www.nhs.uk/medicines/aspirin/"},
+    {"name": "奥美拉唑", "category": "抑酸用药", "summary": "减少胃酸，可用于反流和胃溃疡等；剂量和疗程取决于产品类型及治疗原因。", "source": "https://www.nhs.uk/medicines/omeprazole/"},
+    {"name": "乳果糖", "category": "通便等用药", "summary": "属于渗透性泻剂，可用于便秘，也用于肝性脑病；不同用途的服用安排不能混同。", "source": "https://www.nhs.uk/medicines/lactulose/"}
+  ]
+}

@@ -1,0 +1,38 @@
+# Local credentials and private configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python environments and generated files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+*.egg-info/
+
+# Downloaded dependencies and deployment packages
+.robot-wheelhouse/
+vendor/
+*.whl
+*.zip
+
+# Runtime logs, recordings, and collected feedback
+*.log
+*.jsonl
+*.wav
+*.mp3
+*.db
+*.sqlite*
+
+# Editor and operating system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
