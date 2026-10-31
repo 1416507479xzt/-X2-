@@ -11,7 +11,9 @@ from pathlib import Path
 import sys
 import time
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "vendor"))
+sys.path.insert(0, str(ROOT))
 
 from x2_agent.aimdk_audio import VadAssembler
 

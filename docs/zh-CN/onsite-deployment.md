@@ -16,6 +16,32 @@
 4. 按与现场固件匹配的官方说明切换到 `only_voice`，并准备恢复 `normal` 的操作。`scripts/run_robot_agent.py` 还要求会话环境变量 `X2_ONLY_VOICE_CONFIRMED=1`，防止未确认模式时误启动。这个变量是人工确认标记，不会自动核实机器人状态。
 5. 先以 `--presentation-backend none` 做语音链路测试，再验证 AimDK 表情与预设动作。发现冲突或异常应停止自研 Agent，按官方流程恢复原生模式。完整真机演示尚未验收。
 
+## 当前机器人上的下一步：只读 ASR 联调
+
+手头 X2 已确认可收到完整 VAD PCM，但尚未确认这段音频能被项目使用的豆包 ASR 正确识别。可先在**手头机器人**上运行离线包中的 ASR 探针。此步骤只订阅麦克风话题并请求云端识别，不申请音频焦点、不播放、不切换交互模式，也不保存录音。`scripts/aimdk_asr_probe.py` 会从包内 `vendor/` 加载依赖，无需向系统 Python 安装 `websockets`。
+
+在电脑 PowerShell 中复制离线包（机器人地址仅适用于目前手头这台，比赛现场须换成赛方给出的地址）：
+
+```powershell
+scp '智慧养老_X2真机离线运行包_aarch64_py310.zip' agi@192.168.0.111:/home/agi/eldercare-probe/
+```
+
+在机器人 SSH 终端中执行；解压到用户目录后，不覆盖 `/home/agi/aimdk`：
+
+```bash
+cd /home/agi/eldercare-probe
+unzip -q -o 智慧养老_X2真机离线运行包_aarch64_py310.zip
+source /home/agi/aimdk/install/local_setup.bash
+cd eldercare_x2
+python3 scripts/robot_preflight.py
+read -r -s -p '豆包语音 API Key: ' DOUBAO_SPEECH_API_KEY; echo
+export DOUBAO_SPEECH_API_KEY
+python3 scripts/aimdk_asr_probe.py --duration 60 --stream-id 1
+unset DOUBAO_SPEECH_API_KEY
+```
+
+`read -s` 不会回显密钥，也不会将密钥写入命令历史；不要把密钥或带密钥的终端截图发到聊天或仓库。若预检失败，先记录不含密钥的报错并停止。探针打印识别文字时，核对是否与实际说话一致；不要把真实长者的语音或健康信息用于公开测试。识别成功只说明输入与云端 ASR 这两段联通，仍不代表模型回答、TTS 播放、表情动作及 `only_voice` 已在真机验证。
+
 ## 当前限制
 
 目前已在一台机载 AimDK v1.0.0 的 X2 上只读验证 VAD PCM 输入；v1.1.0 只依据官方文档和接口字段做了静态适配，赛方统一机器人尚未拿到。云端 ASR、真机播放、音频焦点、`only_voice` 模式和多环节连续演示均未实测。离线包解决“现场不联网装 Python 包”的问题，**不保证不同固件零配置直接运行**。业务逻辑通过传输适配器保持一致，但环境和接口适配必须按现场机器验证。
