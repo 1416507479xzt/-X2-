@@ -21,7 +21,7 @@ class Message:
 
 
 class PlaybackTests(unittest.IsolatedAsyncioTestCase):
-    def make_player(self, granted=True):
+    def make_player(self, granted=True, release_confirmed=True):
         player = AimdkPcmPlayer.__new__(AimdkPcmPlayer)
         player.pkg_name = "eldercare_agent"
         player.priority = 4
@@ -38,6 +38,7 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
         player.publisher = SimpleNamespace(publish=published.append)
         player.node = SimpleNamespace(get_clock=lambda: SimpleNamespace(
             now=lambda: SimpleNamespace(to_msg=lambda: "stamp")))
+        player.ros = SimpleNamespace(spin_once=lambda node, timeout_sec=0: None)
         calls = []
 
         async def call(client, request):
@@ -46,7 +47,8 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
                           request.focus_requester.priority_weight))
             return SimpleNamespace(reponse=SimpleNamespace(
                 status=SimpleNamespace(value=1)),
-                focus_response=SimpleNamespace(focus_gain=granted))
+                focus_response=SimpleNamespace(focus_gain=(
+                    granted if client == "request" else not release_confirmed)))
 
         player._call = call
         return player, published, calls
@@ -82,6 +84,24 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
                 await player.write(b"\x01")
         finally:
             await player.end()
+        self.assertEqual(published, [])
+
+    async def test_focus_loss_notification_stops_next_pcm_publish(self):
+        player, published, _ = self.make_player()
+        await player.begin()
+        player.ros.spin_once = lambda node, timeout_sec=0: player._on_focus_response(
+            SimpleNamespace(pkg_name=player.pkg_name, focus_gain=False))
+        with self.assertRaisesRegex(AudioFocusError, "抢占"):
+            await player.write(b"\x01\x00")
+        await player.end()
+        self.assertEqual(published, [])
+
+    async def test_release_must_be_confirmed_by_focus_response(self):
+        player, published, _ = self.make_player(release_confirmed=False)
+        await player.begin()
+        with self.assertRaisesRegex(AudioFocusError, "释放音频焦点失败"):
+            await player.end()
+        self.assertTrue(player._has_focus)
         self.assertEqual(published, [])
 
 

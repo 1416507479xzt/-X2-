@@ -117,12 +117,15 @@ class AimdkPcmPlayer:
             raise ValueError("S16LE PCM 必须有偶数字节")
         # Keep the hardware queue bounded even when cloud TTS emits a burst.
         for offset in range(0, len(pcm), 3200):
-            if not self._has_focus:
-                raise AudioFocusError("音频焦点已被其他来源抢占")
             chunk = pcm[offset:offset + 3200]
             delay = self._next_publish_time - time.monotonic()
             if delay > 0:
                 await asyncio.sleep(delay)
+            # This node is otherwise spun only during service calls. Process
+            # focus-loss notifications before every publish as well.
+            self.ros.spin_once(self.node, timeout_sec=0)
+            if not self._has_focus:
+                raise AudioFocusError("音频焦点已被其他来源抢占")
             msg = self.AudioPlayback()
             msg.stamps = self.node.get_clock().now().to_msg()
             msg.info.channels = 1
@@ -150,7 +153,8 @@ class AimdkPcmPlayer:
                     await asyncio.sleep(delay)
                 response = await self._call(self.abandon_client,
                                             self._focus_request(self.AbandonAudioFocus))
-                if response.reponse.status.value != 1:
+                if (response.reponse.status.value != 1 or
+                        response.focus_response.focus_gain):
                     raise AudioFocusError("释放音频焦点失败，结果未确认")
                 self._has_focus = False
         finally:
