@@ -20,10 +20,11 @@
 
 手头 X2 已确认可收到完整 VAD PCM，但尚未确认这段音频能被项目使用的豆包 ASR 正确识别。可先在**手头机器人**上运行离线包中的 ASR 探针。此步骤只订阅麦克风话题并请求云端识别，不申请音频焦点、不播放、不切换交互模式，也不保存录音。`scripts/aimdk_asr_probe.py` 会从包内 `vendor/` 加载依赖，无需向系统 Python 安装 `websockets`。
 
-在电脑 PowerShell 中复制离线包（机器人地址仅适用于目前手头这台，比赛现场须换成赛方给出的地址）：
+在电脑 PowerShell 中先进入本仓库根目录，再输入当前机器人的地址并复制上一级目录中的离线包；比赛现场须使用赛方给出的地址：
 
 ```powershell
-scp '智慧养老_X2真机离线运行包_aarch64_py310.zip' agi@192.168.0.111:/home/agi/eldercare-probe/
+$RobotIp = Read-Host '输入机器人 IP'
+scp '..\智慧养老_X2真机离线运行包_aarch64_py310.zip' "agi@${RobotIp}:/home/agi/eldercare-probe/"
 ```
 
 在机器人 SSH 终端中执行；解压到用户目录后，不覆盖 `/home/agi/aimdk`：

@@ -6,6 +6,8 @@
 
 Python 客户端通过 WebSocket 连接 X2 模拟器。`agent.py` 使用豆包语音服务和火山方舟处理语音对话与技能调用；`demo.py` 使用固定文字和录音检查连接。
 
+真机迁移使用同一套 Agent 业务代码和独立的 AimDK 音频适配层。手头 X2 的已验证事实、待验收项见[真机接入记录](docs/zh-CN/aimdk-v1-robot-audio.md)；赛方统一机器人的准备与只读预检见[现场部署方案](docs/zh-CN/onsite-deployment.md)。完整真机语音对话及表情动作尚未验收。
+
 
 Python clients for the X2 simulator. `agent.py` provides voice conversations and skill calls through Doubao and Volcengine Ark; `demo.py` checks connections with fixed text and recordings.
 
