@@ -1,6 +1,6 @@
 # 从新电脑复现 X2 自研语音 Agent
 
-本文对应仓库当前源码。目标是让同一套对话业务逻辑在灵犀 X2 上处理语音唤醒、连续问询、生活协助和食堂意见，并通过 AimDK 播报与表现。**截至 2026-11-05，仅手头 X2 的麦克风 VAD PCM 输入完成实测；完整真机对话尚未验收。**各环节事实见[真机接入记录](aimdk-v1-robot-audio.md)。
+本文对应仓库当前源码。目标是让同一套对话业务逻辑在灵犀 X2 上处理语音唤醒、连续问询、生活协助和食堂意见，并通过 AimDK 播报与表现。**截至 2026-11-06，手头 X2 的麦克风 VAD PCM 输入和一次豆包语音 ASR 转写完成实测；完整真机对话尚未验收。**各环节事实见[真机接入记录](aimdk-v1-robot-audio.md)。
 
 ## 0. 先确认目标机器
 
@@ -54,7 +54,7 @@ python3 scripts/robot_preflight.py
 | 顺序 | 命令或操作 | 通过的证据 |
 |---|---|---|
 | 麦克风 | `python3 scripts/aimdk_mic_probe.py --duration 60 --stream-id 1`（仅已验证的 v1.0.0） | 有完整非空 PCM；这一步已在手头 X2 实测 |
-| 云端识别 | 按下面的临时密钥步骤执行 `aimdk_asr_probe.py` | 终端转写与实际所说相符；尚未真机实测 |
+| 云端识别 | 按下面的临时密钥步骤执行 `aimdk_asr_probe.py` | 手头 X2 已一次识别为“你好啊。”；更多语句准确率待测 |
 | 自研对话 | 按第 4 节切换模式后运行完整 Agent | 能完成唤醒、上下文、回答；尚未真机实测 |
 | 扬声器 | 完整 Agent 的 TTS 通过 AimDK 音频焦点播出 | 实际听到语音且不与安全播报冲突；尚未真机实测 |
 | 表情动作 | 语音验收后启用 AimDK 表现后端 | 表情和预设动作与回答配合、执行安全；尚未真机实测 |
@@ -74,7 +74,7 @@ unset DOUBAO_SPEECH_API_KEY
 
 若已收到 PCM，但云端 WebSocket 握手返回 `HTTP 401`，说明尚未进入识别阶段。先确认输入的是**豆包语音** API Key（不是方舟 Key），且该 Key 非空；再在豆包语音控制台核对已开通的流式语音识别版本和计费类型。本探针默认请求 2.0 小时版 `volc.seedasr.sauc.duration`。仅当控制台实际开通 1.0 小时版时，在机器人当前终端执行 `export DOUBAO_ASR_RESOURCE_ID=volc.bigasr.sauc.duration` 后重试；若开通并发版，应使用对应版本的 `*.concurrent` 资源 ID。不要通过猜测版本或更改机器人 SDK 来处理鉴权失败。结束后执行 `unset DOUBAO_ASR_RESOURCE_ID`。资源 ID 列表见[豆包语音官方接口说明](https://docs.volcengine.com/docs/doubao-voice/unidirectional-streaming-automatic-speech-recognition-websocket?lang=zh)。
 
-2026-11-06 使用本地保存的豆包语音 Key 做**仅握手、不发送音频**的核对：`volc.seedasr.sauc.duration`（2.0 小时版）成功，`volc.bigasr.sauc.duration`（1.0 小时版）返回 `HTTP 403` 和 `requested resource not granted`。因此手头账号在当前 Key 下应使用默认的 2.0 小时版资源 ID。此项只验证账号资源授权，未验证机载 ASR 转写。
+2026-11-06 使用本地保存的豆包语音 Key 做**仅握手、不发送音频**的核对：`volc.seedasr.sauc.duration`（2.0 小时版）成功，`volc.bigasr.sauc.duration`（1.0 小时版）返回 `HTTP 403` 和 `requested resource not granted`。因此手头账号在当前 Key 下应使用默认的 2.0 小时版资源 ID。随后机载探针收到 1.70 秒 PCM，成功识别为“你好啊。”。
 
 ## 4. 运行完整 Agent 与恢复原生交互
 
