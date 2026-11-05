@@ -88,6 +88,8 @@ aima em start-app agent
 
 模式切换与恢复尚未在手头机器人上测试。若切换后的实际状态或收音行为不符合官方说明，先恢复原生模式并记录结果。停止自研程序后，官方恢复步骤为：
 
+手头 v1.0.0 的 `only_voice` 设置请求曾返回 `header.code=0`、`status.value=0 (UNKNOWN)`；ROS 图虽有 `GetAgentPropertiesRequest` 服务，机载 SDK 却没有该服务的 `.idl` 和 Python 类型。因此不要仅凭返回码或脚本中的手动确认变量宣称模式已切换，需在重启后用真实收音与原生交互行为核对。下方恢复命令应在操作前备好。
+
 ```bash
 ros2 service call /aimdk_5Fmsgs/srv/SetAgentPropertiesRequest aimdk_msgs/srv/SetAgentPropertiesRequest "{contents: {properties: [{key: {value: 2}, value: 'normal'}]}}"
 aima em stop-app agent
