@@ -15,6 +15,8 @@ python -m zipfile -t .\dist\eldercare_x2_aarch64_py310.zip
 
 构建需要开发电脑联网下载锁定版本的 Linux aarch64 / CPython 3.10 Python 依赖。生成的 ZIP 位于 `dist/`，不会提交到 Git。真机运行云端 ASR、LLM、TTS 仍需要联网；API Key 在机器人运行时单独提供，不在源码仓库或部署包中。
 
+机器人 Wi-Fi IP 会随网络变化。部署时从机器人信息页面确认当前 IP，并在 PowerShell 中输入；源码和启动配置不预设历史 IP。
+
 ## 当前验证状态
 
 手头一台 AimDK v1.0.0 的 X2 已实测麦克风 VAD PCM 输入。真机 ASR 结果、音频焦点与播报、模型完整对话、表情动作和赛方统一机器人上的运行仍待逐项验收。v1.1.0 音频参数依据官方文档做了静态适配，尚未实机验证。详见[已验证事实与待验收项](docs/zh-CN/aimdk-v1-robot-audio.md)。

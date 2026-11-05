@@ -25,10 +25,13 @@ python -m zipfile -t .\dist\eldercare_x2_aarch64_py310.zip
 
 ## 2. 复制到手头机器人
 
-在**电脑 PowerShell，仓库根目录**执行；将 IP 换成当前机器人的实际地址。下面的 `agi` 和 `/home/agi` 适用于手头这台机器人，赛方机器以现场账号为准：
+机器人的 Wi-Fi 地址可能在重新联网后改变。**每次部署或重新建立 SSH 连接前**，先从机器人信息页面查看当前 IP；若已经能进入机器人终端，也可运行 `ip -4 -br addr show wifi0` 核对。不要沿用历史联调记录中的地址。
+
+在**电脑 PowerShell，仓库根目录**执行，按提示输入当次查到的地址。下面的 `agi` 和 `/home/agi` 适用于手头这台机器人，赛方机器以现场账号为准：
 
 ```powershell
-$RobotIp = Read-Host '输入机器人 IP'
+$RobotIp = Read-Host '输入机器人当前 IP（每次连接前重新核对）'
+if ([string]::IsNullOrWhiteSpace($RobotIp)) { throw '机器人 IP 不能为空' }
 ssh "agi@${RobotIp}" 'mkdir -p /home/agi/eldercare-x2'
 scp .\dist\eldercare_x2_aarch64_py310.zip "agi@${RobotIp}:/home/agi/eldercare-x2/"
 ssh "agi@${RobotIp}"
