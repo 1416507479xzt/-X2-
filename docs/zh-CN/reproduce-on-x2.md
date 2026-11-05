@@ -74,6 +74,8 @@ unset DOUBAO_SPEECH_API_KEY
 
 若已收到 PCM，但云端 WebSocket 握手返回 `HTTP 401`，说明尚未进入识别阶段。先确认输入的是**豆包语音** API Key（不是方舟 Key），且该 Key 非空；再在豆包语音控制台核对已开通的流式语音识别版本和计费类型。本探针默认请求 2.0 小时版 `volc.seedasr.sauc.duration`。仅当控制台实际开通 1.0 小时版时，在机器人当前终端执行 `export DOUBAO_ASR_RESOURCE_ID=volc.bigasr.sauc.duration` 后重试；若开通并发版，应使用对应版本的 `*.concurrent` 资源 ID。不要通过猜测版本或更改机器人 SDK 来处理鉴权失败。结束后执行 `unset DOUBAO_ASR_RESOURCE_ID`。资源 ID 列表见[豆包语音官方接口说明](https://docs.volcengine.com/docs/doubao-voice/unidirectional-streaming-automatic-speech-recognition-websocket?lang=zh)。
 
+2026-11-06 使用本地保存的豆包语音 Key 做**仅握手、不发送音频**的核对：`volc.seedasr.sauc.duration`（2.0 小时版）成功，`volc.bigasr.sauc.duration`（1.0 小时版）返回 `HTTP 403` 和 `requested resource not granted`。因此手头账号在当前 Key 下应使用默认的 2.0 小时版资源 ID。此项只验证账号资源授权，未验证机载 ASR 转写。
+
 ## 4. 运行完整 Agent 与恢复原生交互
 
 自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且须先核对现场固件与服务定义**：
