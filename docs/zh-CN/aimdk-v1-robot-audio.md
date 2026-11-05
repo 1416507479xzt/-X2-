@@ -13,6 +13,7 @@
 | 60 秒只读探针 | BEGIN 8 次、END 7 次、完整非空片段 7 段；其他流 0、超长丢弃 0 | 证实 PC2 可收取完整语音片段；其中一段 119040 字节，按 16 kHz 单声道 S16LE 约 3.72 秒 |
 | 单句云端 ASR | 2.0 小时版 `volc.seedasr.sauc.duration`；收到 1.70 秒 PCM，WebSocket 连接约 204 ms，识别结果为“你好啊。” | 当前机载麦克风到豆包语音识别的链路可用；仍需更多语句核对准确率 |
 | 播放接口 | `/aima/hal/audio/playback` 类型为 `aimdk_msgs/msg/AudioPlayback`；音频焦点服务存在 | 仅确认消息与服务定义，尚未验证声音实际播出 |
+| 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 机载 v1.0.0 字段与官方 `only_voice` 过渡步骤吻合；尚未实际切换或恢复 |
 
 一次 BEGIN 后又收到 BEGIN，不能据此断言完整话语丢失。单句 ASR 已能返回文本；尚未系统测试不同说话方式的准确率。机上系统 Python 缺少 `websockets`；当前离线包把所需版本放在 `vendor/`，不修改系统 Python 或机载 AimDK。
 
@@ -27,7 +28,7 @@
 
 ## 仍需逐项验证
 
-1. 只读核对机载 `SetAgentPropertiesRequest` 服务定义、`only_voice` 与恢复 `normal` 的操作条件，再测试音频焦点和扬声器。当前没有切换模式或测试恢复。
+1. 按已核对的机载 `SetAgentPropertiesRequest` 字段与官方步骤实际测试 `only_voice` 和恢复 `normal`，再测试音频焦点和扬声器。当前没有切换模式或测试恢复。
 2. 测试同一套业务代码的 ASR→大模型→TTS 完整语音对话，再测试表情和预设动作及异常恢复。
 3. 获取赛方机器人后先运行预检。未知版本、架构或字段不兼容时停止，不绕过检查直接运行。
 

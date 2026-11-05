@@ -78,7 +78,7 @@ unset DOUBAO_SPEECH_API_KEY
 
 ## 4. 运行完整 Agent 与恢复原生交互
 
-自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且须先核对现场固件与服务定义**：
+自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。2026-11-06 已只读核对手头 AimDK v1.0.0 的服务存在，`AGENT_PROPERTY_RUN_MODE=2` 且值为字符串；尚未实际切换。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且现场机器仍须核对固件与服务定义**：
 
 ```bash
 ros2 service call /aimdk_5Fmsgs/srv/SetAgentPropertiesRequest aimdk_msgs/srv/SetAgentPropertiesRequest "{contents: {properties: [{key: {value: 2}, value: 'only_voice'}]}}"
