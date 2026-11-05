@@ -1,57 +1,43 @@
-# X2 语音 Agent / Voice agent / Agent vocal
+# 灵犀 X2 自研语音交互 Agent
 
-**使用指南 / User guide / Guide d’utilisation**
+本项目将长者陪护对话接入灵犀 X2 真机：AimDK 提供麦克风、扬声器、表情和预设动作接口；豆包语音服务完成 ASR/TTS；火山方舟上的 Doubao-Seed 模型负责语义理解、回答和受约束的表现选择。迎宾健康问询、生活协助与社区食堂意见共用一套会话逻辑。Unity 仿真用于回归对照，真机通过独立传输适配层运行同一套业务代码。
 
-[简体中文](docs/zh-CN/README.md) · [English](docs/en/README.md) · [Français](docs/fr/README.md)
+## 从另一台电脑开始
 
-Python 客户端通过 WebSocket 连接 X2 模拟器。`agent.py` 使用豆包语音服务和火山方舟处理语音对话与技能调用；`demo.py` 使用固定文字和录音检查连接。
-
-真机迁移使用同一套 Agent 业务代码和独立的 AimDK 音频适配层。手头 X2 的已验证事实、待验收项见[真机接入记录](docs/zh-CN/aimdk-v1-robot-audio.md)；赛方统一机器人的准备与只读预检见[现场部署方案](docs/zh-CN/onsite-deployment.md)。完整真机语音对话及表情动作尚未验收。
-
-
-Python clients for the X2 simulator. `agent.py` provides voice conversations and skill calls through Doubao and Volcengine Ark; `demo.py` checks connections with fixed text and recordings.
-
-竞赛迎宾与健康问询（可选，不改变普通模式）：在模拟器运行时，于本目录执行 `python agent.py --competition-mode --health-semantic model`。默认model模式由大模型统一决定语言、表情和动作；普通回答共用8秒时限，语音唤醒开场最多等待模型3秒，超时则使用固定问候继续问询。本地规则负责唤醒、协议校验、最多两轮问询约束、安全拦截和故障兜底。不可用的表情/动作取消执行，不因此丢弃合规回答。首包语音准备好时下发表现。拒绝回答、改口和新请求由模型理解；失败原话保留为未回答记录。状态只保存在当前进程内，重启后不保留，不是跨日健康档案。
-
-使用 `python agent.py --competition-mode` 同样默认进入model模式。可以说“灵犀”“你好灵犀”或连续叫“灵犀灵犀”唤醒，不预设来访者姓名；旧参数 `--elder-name` 不用于称呼。会话保存最近64轮原话及最近24条模型识别为健康描述的原话；不是无限或跨日记忆。模型判断与自然语言质量仍需真实对话验收。
-
-唤醒按拼音匹配，兼容 `ling xi` / `lin xi` 的不同汉字转写（如“凌曦”“林夕”“琳熙”），整句须为呼叫形式。新增了 pypinyin 依赖，更新后请在运行 Agent 的环境执行 `python -m pip install -r requirements.txt`；拼音转换本身在本机完成，不调用大模型。
-
-问询结束后可以继续追问或回顾，模型依据原话记忆回答，不自动重新开启健康问询。生活协助使用本地核对资料和预设提醒；不能承诺已连接外部医疗或社区平台，也不能给出未经资料支持的个人用药方案。
-
-默认 `--health-semantic model`：常见说法和明确动作请求都走模型统一决策，超时或非法输出只播故障提示，不自动降级到关键词健康话术。`auto`（旧混合模式）和`rules`（旧规则模式）仅保留作回归对照；两者不是完全离线模式。新模式与AimDK接口映射、启动参数和验证边界见[模型统一决策与真机表现接入](docs/zh-CN/model-presentation.md)。
-
-启动、仿真验收用例与当前边界见 [环节一验收指南](docs/zh-CN/stage1-acceptance.md)。环节四的食堂意见收集、确认入表和本机反馈表见 [食堂意见收集指南](docs/zh-CN/stage4-dining-feedback.md)。此版本不包含自动定时推送提醒、向外部社区平台同步数据或灵创舞蹈；仿真效果及真实首音延迟需实际验收，真机适配尚需单独验证。
-
-Clients Python pour le simulateur X2. `agent.py` utilise Doubao et Volcengine Ark pour le dialogue vocal et les actions ; `demo.py` vérifie la connexion avec du texte fixe et des enregistrements.
-
-## 启动 / Run / Lancement
-
-先启动模拟器，再在本目录中执行以下命令。需要 Python 3.10+，demo 无需云服务密钥。
-
-Start the simulator first, then run these commands in this directory. Python 3.10+ is required; the demo needs no cloud keys.
-
-Démarrez le simulateur, puis exécutez ces commandes dans ce dossier. Python 3.10+ est requis ; la démo ne nécessite aucune clé cloud.
+完整的克隆、离线包构建、SSH 复制、真机预检、逐层联调和原生交互恢复步骤见 **[从新电脑复现 X2 自研语音 Agent](docs/zh-CN/reproduce-on-x2.md)**。核心命令在 Windows PowerShell 的仓库根目录执行：
 
 ```powershell
-python -m pip install -r requirements.txt
-python demo.py
+git clone https://github.com/1416507479xzt/-X2-.git
+Set-Location .\-X2-
+python scripts/build_robot_bundle.py --download-wheels
+python -m zipfile -t .\dist\eldercare_x2_aarch64_py310.zip
 ```
 
-语音凭据、参数、技能和排障见上方三语指南。/ See the guides above for voice credentials, options, skills and troubleshooting. / Consultez les guides pour les identifiants vocaux, paramètres, actions et dépannage.
+构建需要开发电脑联网下载锁定版本的 Linux aarch64 / CPython 3.10 Python 依赖。生成的 ZIP 位于 `dist/`，不会提交到 Git。真机运行云端 ASR、LLM、TTS 仍需要联网；API Key 在机器人运行时单独提供，不在源码仓库或部署包中。
 
-## 目录 / Layout / Organisation
+## 当前验证状态
 
-```text
-x2_agent/
-├── agent.py            # Voice agent entry
-├── demo.py             # Offline demo entry
-├── .env.example        # Configuration template
-├── requirements.txt
-├── x2_agent/           # Implementation
-├── tests/
-└── docs/
-    ├── zh-CN/README.md
-    ├── en/README.md
-    └── fr/README.md
-```
+手头一台 AimDK v1.0.0 的 X2 已实测麦克风 VAD PCM 输入。真机 ASR 结果、音频焦点与播报、模型完整对话、表情动作和赛方统一机器人上的运行仍待逐项验收。v1.1.0 音频参数依据官方文档做了静态适配，尚未实机验证。详见[已验证事实与待验收项](docs/zh-CN/aimdk-v1-robot-audio.md)。
+
+项目的目标是**业务对话代码不因仿真或真机而改动**；设备接口、固件、网络和运行环境仍需用实际机器人验证。未知 AimDK 版本或不兼容字段会在预检中停止，避免直接运行未核对的接口。
+
+## 代码位置
+
+| 路径 | 作用 |
+|---|---|
+| `x2_agent/agent.py`、`x2_agent/model_dialogue.py` | 会话调度、模型对话、上下文记忆与表现选择 |
+| `x2_agent/asr.py`、`x2_agent/tts.py` | 豆包语音识别和合成 |
+| `x2_agent/aimdk_audio.py`、`x2_agent/aimdk_transport.py`、`x2_agent/aimdk_playback.py` | 真机 ROS 音频输入、事件适配和播放 |
+| `x2_agent/presentation.py` | 表情与预设动作的受限映射 |
+| `data/`、`x2_agent/life_assistance.py`、`x2_agent/dining_feedback.py` | 用药资料、健康提醒和食堂意见处理 |
+| `scripts/robot_preflight.py`、`scripts/aimdk_*_probe.py` | 只读兼容性与语音探针 |
+| `scripts/build_robot_bundle.py`、`scripts/run_robot_agent.py` | 离线打包与真机启动入口 |
+| `tests/` | 无机器人时的回归测试 |
+
+## 仿真回归
+
+Windows 便携模拟器运行时，在仓库根目录安装 `requirements.txt`，在本地 `.env` 配置两把 API Key，再执行 `python agent.py --competition-mode --health-semantic model`。这一入口默认走 Unity WebSocket；真机入口与步骤见上方复现指南。仿真细节见[中文指南](docs/zh-CN/README.md)。
+
+## 数据与来源
+
+`.gitignore` 排除了 `.env`、录音、历史反馈、缓存与生成的 ZIP。药品资料和提醒内容为项目配置，不能代替个人处方或真实预约记录。开源基础与改动说明见[开源引用说明](开源引用说明.md)及仓库提交历史。
