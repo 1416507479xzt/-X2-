@@ -90,6 +90,8 @@ aima em start-app agent
 
 手头 v1.0.0 的 `only_voice` 设置请求曾返回 `header.code=0`、`status.value=0 (UNKNOWN)`；ROS 图虽有 `GetAgentPropertiesRequest` 服务，机载 SDK 却没有该服务的 `.idl` 和 Python 类型。因此不要仅凭返回码或脚本中的手动确认变量宣称模式已切换，需在重启后用真实收音与原生交互行为核对。下方恢复命令应在操作前备好。
 
+**实机例外（2026-11-06）：**手头 X2 的 PC2 `aima em` 应用列表没有 `agent`，在 PC2 直接执行 `aima em stop-app agent` 不会重启交互模块。下方 `aima` 命令是官方通用示例，使用前必须确认交互模块所在计算单元及获准的重启通道。每次新开 SSH 会话，先运行 `source /home/agi/aimdk/install/local_setup.bash`，否则 `ros2 service call` 会报服务类型无效。先把模式设回 `normal`，再核对实际恢复方式；不要反复对 PC2 调用不存在的 `agent` 应用。
+
 ```bash
 ros2 service call /aimdk_5Fmsgs/srv/SetAgentPropertiesRequest aimdk_msgs/srv/SetAgentPropertiesRequest "{contents: {properties: [{key: {value: 2}, value: 'normal'}]}}"
 aima em stop-app agent

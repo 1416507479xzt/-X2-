@@ -15,6 +15,7 @@
 | 播放接口 | `/aima/hal/audio/playback` 类型为 `aimdk_msgs/msg/AudioPlayback`；音频焦点服务存在 | 仅确认消息与服务定义，尚未验证声音实际播出 |
 | 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 机载 v1.0.0 字段与官方 `only_voice` 过渡步骤吻合；尚未实际切换或恢复 |
 | 模式设置响应与查询 | 已发送 `only_voice` 请求，响应 `header.code=0`、`status.value=0 (UNKNOWN)`；`GetAgentPropertiesRequest` 服务在 ROS 图中存在，但机载 SDK 缺少其 `.idl` 和 Python 类型 | 不能凭该响应断言模式已生效，也无法用现有 ROS CLI 直接读取；下一步重启后按实际行为核对，并准备 `normal` 恢复 |
+| PC2 恢复命令实测 | 新 SSH 会话未加载 AimDK 时 `ros2 service call` 返回 `The passed service type is invalid`；PC2 的 `aima em` 应用列表没有 `agent` | 每个新 SSH 会话须先加载机载 AimDK；不可在这台 PC2 上照搬 `aima em stop-app agent`，需确认交互模块所在计算单元及获准的重启方式 |
 
 一次 BEGIN 后又收到 BEGIN，不能据此断言完整话语丢失。单句 ASR 已能返回文本；尚未系统测试不同说话方式的准确率。机上系统 Python 缺少 `websockets`；当前离线包把所需版本放在 `vendor/`，不修改系统 Python 或机载 AimDK。
 
@@ -29,7 +30,7 @@
 
 ## 仍需逐项验证
 
-1. 按已核对的机载 `SetAgentPropertiesRequest` 字段与官方步骤重启 agent，通过实际收音和原生交互行为测试 `only_voice`，并测试恢复 `normal`；再测试音频焦点和扬声器。当前只发送了设置请求，尚未重启或测试恢复。
+1. 在 PC2 新 SSH 会话加载 AimDK 后先发送 `normal` 恢复请求；确认交互模块所在计算单元和正确重启方式，再通过原生回复行为验证恢复。当前 PC2 的 `aima em` 不支持 `agent`，不能继续照搬官方重启命令。
 2. 测试同一套业务代码的 ASR→大模型→TTS 完整语音对话，再测试表情和预设动作及异常恢复。
 3. 获取赛方机器人后先运行预检。未知版本、架构或字段不兼容时停止，不绕过检查直接运行。
 

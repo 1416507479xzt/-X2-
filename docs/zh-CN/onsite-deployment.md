@@ -19,6 +19,7 @@
 ## 到场先核对
 
 1. 确认机型是否为 X2 Ultra，以及赛方允许的 SSH、文件复制、原生交互模式切换和恢复方式。官方 [`only_voice` 过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)明确限定 X2 Ultra。
+   手头 X2 的 PC2 `aima em` 应用列表没有 `agent`，官方示例里的重启命令不能在该 PC2 直接复用；需先确认交互模块所在计算单元及实际重启方式。
 2. 在 PC2 上只读检查 `uname -m`、`python3 --version`、机载 AimDK `version` 文件和 `ros2 interface`；再运行包内 `scripts/robot_preflight.py`。已知离线包只针对 Linux aarch64、CPython 3.10 和 AimDK v1.0.0/v1.1.0 的音频接口。其他版本先适配再演示。
 3. 确认机器人运行时能连接豆包语音和火山方舟服务，并获准使用自备 API Key。离线包免去真机上下载 Python 依赖，不能替代云端服务网络。
 4. 先做只读 PCM 和 ASR 转写，再按官方流程切换与恢复 `only_voice`，依次测模型回答、TTS 音频焦点、表情动作及环节一、二、四的连续对话。每一项均需保存不含密钥和真实长者隐私的结果。
