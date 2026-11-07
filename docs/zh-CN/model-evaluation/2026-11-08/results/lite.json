@@ -1,0 +1,152 @@
+{
+  "model": "doubao-seed-2-1-lite-260915",
+  "test_time": "2026-10-24T11:01:00+08:00",
+  "turns": [
+    {
+      "section": "greeting",
+      "user": "语音唤醒",
+      "answer": {
+        "reply": "您好，我是灵犀，很高兴见到您呀，请问您今天的身体状态怎么样？",
+        "emotion": "happy",
+        "gesture": "wave_hands",
+        "intent": "greeting",
+        "action": "continue"
+      },
+      "model_ms": 1543
+    },
+    {
+      "section": "stage1",
+      "user": "我今天有点疲惫。",
+      "answer": {
+        "intent": "health",
+        "action": "followup",
+        "reply": "今天觉得疲惫的话，您可以试着把作息规律起来，睡前听听舒缓的音乐放松一下。这种疲惫影响您今天正常做事了吗？",
+        "emotion": "sympathy",
+        "gesture": "open_arms",
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 2219
+    },
+    {
+      "section": "stage1",
+      "user": "最近没睡好，脖子和腰都有点酸。",
+      "answer": {
+        "intent": "health",
+        "action": "close",
+        "reply": "脖子和腰都酸确实会让人不舒服，近期没睡好也可能和这些不适互相影响。您先留意酸痛的变化，若近期有摔倒或扭伤、疼痛迅速加重，或出现手臂发麻、双腿无力等情况，要及时联系医护。今天先照顾好自己，有需要再叫我。",
+        "emotion": "sympathy",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 4023
+    },
+    {
+      "section": "memory",
+      "user": "刚才我说哪里不舒服？",
+      "answer": {
+        "intent": "recall",
+        "action": "continue",
+        "reply": "您之前提到今天有点疲惫，最近没睡好，脖子和腰都有点酸。",
+        "emotion": "neutral",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 1356
+    },
+    {
+      "section": "medicine",
+      "user": "降压药怎么吃？",
+      "answer": {
+        "intent": "other",
+        "action": "continue",
+        "reply": "降压药要按照您本人处方规定的时间、频次和剂量规律服用，不同降压药的服用量并不相同。要注意别因为一次血压正常就自行停药或者加减量，服后如果觉得明显头晕，要及时联系医护核对。您可以对照自己的处方或者药盒说明，确认清楚每次的用量和服用时间。",
+        "emotion": "neutral",
+        "gesture": "open_arms",
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 2271
+    },
+    {
+      "section": "reminder",
+      "user": "今天还有什么安排？",
+      "answer": null,
+      "model_ms": 7994
+    },
+    {
+      "section": "reminder",
+      "user": "现在该吃药了吗？",
+      "answer": {
+        "intent": "reminder",
+        "action": "continue",
+        "reply": "今天的用药提醒时间是今天8点整。这只是预设时间，实际服药请按医嘱。现在已经过了这个时间，您今天已经吃过药了吗？",
+        "emotion": "neutral",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": {
+            "kind": "medication_taken",
+            "occurrence_id": "demo-medication@2026-10-24"
+          }
+        }
+      },
+      "model_ms": 1437
+    },
+    {
+      "section": "dining",
+      "user": "我想给食堂提个意见，今天的菜太咸了，下次想吃清淡一点的。",
+      "answer": {
+        "intent": "dining",
+        "action": "continue",
+        "reply": "您觉得今天的菜太咸了。希望下次想吃清淡一点的。要记入食堂反馈表吗？",
+        "emotion": "happy",
+        "gesture": null,
+        "_dining_transition": {
+          "reply": "您觉得今天的菜太咸了。希望下次想吃清淡一点的。要记入食堂反馈表吗？",
+          "pending": {
+            "stage": "await_confirm",
+            "request_id": "36cb1affe4c547b899b95ffff230591d",
+            "category": "taste",
+            "item": "今天的菜",
+            "observation": "太咸了",
+            "request": "下次想吃清淡一点的"
+          }
+        }
+      },
+      "model_ms": 1699
+    },
+    {
+      "section": "dining",
+      "user": "确认提交",
+      "answer": {
+        "intent": "dining",
+        "action": "continue",
+        "reply": "好的，已经记入食堂反馈表了。",
+        "emotion": "happy",
+        "gesture": null,
+        "_dining_transition": {
+          "reply": "好的，已经记入食堂反馈表了。",
+          "pending": null,
+          "save": {
+            "id": "36cb1affe4c547b899b95ffff230591d",
+            "category": "taste",
+            "item": "今天的菜",
+            "observation": "太咸了",
+            "request": "下次想吃清淡一点的",
+            "source": "voice_confirmed",
+            "status": "new",
+            "demo": true
+          }
+        }
+      },
+      "model_ms": 1536
+    }
+  ],
+  "dining_record_saved": true
+}

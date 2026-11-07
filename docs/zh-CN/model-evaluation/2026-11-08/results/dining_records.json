@@ -1,0 +1,114 @@
+[
+  {
+    "run": "mini",
+    "record": {
+      "id": "05da5d1274bd46a2a939f3e769564edd",
+      "category": "taste",
+      "item": "菜",
+      "observation": "太咸",
+      "request": "想吃清淡一点的",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:21:56.246114+08:00"
+    }
+  },
+  {
+    "run": "mini_r2",
+    "record": {
+      "id": "70b5e1af7f784490afdf5b167de6fc2f",
+      "category": "taste",
+      "item": "菜",
+      "observation": "太咸",
+      "request": "想吃清淡一点",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:28:37.027989+08:00"
+    }
+  },
+  {
+    "run": "lite",
+    "record": {
+      "id": "36cb1affe4c547b899b95ffff230591d",
+      "category": "taste",
+      "item": "今天的菜",
+      "observation": "太咸了",
+      "request": "下次想吃清淡一点的",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:25:07.496098+08:00"
+    }
+  },
+  {
+    "run": "lite_r2",
+    "record": {
+      "id": "ea50b08fede0421abd53a405ab9cdf6f",
+      "category": "taste",
+      "item": "今天的菜",
+      "observation": "太咸",
+      "request": "下次想吃清淡一点的",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:29:09.204719+08:00"
+    }
+  },
+  {
+    "run": "evolving",
+    "record": {
+      "id": "92623cc8a66941d4aed8e1e0e0dae6dd",
+      "category": "taste",
+      "item": "今天的菜",
+      "observation": "太咸了",
+      "request": "想吃清淡一点的",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:25:47.951307+08:00"
+    }
+  },
+  {
+    "run": "evolving_r2",
+    "record": {
+      "id": "d43f736f96c841e691f7dd644529219a",
+      "category": "taste",
+      "item": "今天的菜",
+      "observation": "太咸",
+      "request": "想吃清淡一点的",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:29:51.135943+08:00"
+    }
+  },
+  {
+    "run": "pro_260628",
+    "record": {
+      "id": "2a9688e987504449a990b0d5c591f21c",
+      "category": "taste",
+      "item": "菜",
+      "observation": "太咸",
+      "request": "想吃清淡一点的",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:31:17.653385+08:00"
+    }
+  },
+  {
+    "run": "pro_260628_r2",
+    "record": {
+      "id": "558b3be8780b420e94a83c6e0433fdf2",
+      "category": "taste",
+      "item": "菜",
+      "observation": "太咸",
+      "request": "清淡一点",
+      "source": "voice_confirmed",
+      "status": "new",
+      "demo": true,
+      "submitted_at": "2026-11-08T00:32:09.572204+08:00"
+    }
+  }
+]

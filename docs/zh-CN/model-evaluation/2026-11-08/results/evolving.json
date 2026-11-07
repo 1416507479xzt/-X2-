@@ -1,0 +1,161 @@
+{
+  "model": "doubao-seed-evolving",
+  "test_time": "2026-10-24T11:01:00+08:00",
+  "turns": [
+    {
+      "section": "greeting",
+      "user": "语音唤醒",
+      "answer": {
+        "reply": "您好，我是灵犀，很高兴见到您。今天感觉怎么样，精神还可以吗？",
+        "emotion": "happy",
+        "gesture": "wave_hands",
+        "intent": "greeting",
+        "action": "continue"
+      },
+      "model_ms": 1183
+    },
+    {
+      "section": "stage1",
+      "user": "我今天有点疲惫。",
+      "answer": {
+        "intent": "health",
+        "action": "followup",
+        "reply": "听起来今天精神不太足。您可以先尽量保持规律作息，睡前安排点阅读或听音乐这类放松活动，环境也保持安静、昏暗一些。这种疲惫影响您今天做事了吗？",
+        "emotion": "sympathy",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 5282
+    },
+    {
+      "section": "stage1",
+      "user": "最近没睡好，脖子和腰都有点酸。",
+      "answer": {
+        "intent": "health",
+        "action": "close",
+        "reply": "没睡好又遇到颈腰发酸，确实会让人更不轻松。颈部先避免长时间保持同一姿势；腰背若没有受伤、活动也不加重疼痛，可在能承受的范围内维持日常活动，避免久卧。若近期摔倒扭伤，或疼痛迅速加重、出现手臂发冷针刺感、腿麻无力等情况，请及时联系医护。今天先照顾好自己，有需要再叫我。",
+        "emotion": "sympathy",
+        "gesture": "open_arms",
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 5464
+    },
+    {
+      "section": "memory",
+      "user": "刚才我说哪里不舒服？",
+      "answer": {
+        "intent": "recall",
+        "action": "continue",
+        "reply": "您刚才说今天有点疲惫，最近没睡好，脖子和腰都有点酸。",
+        "emotion": "neutral",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 4146
+    },
+    {
+      "section": "medicine",
+      "user": "降压药怎么吃？",
+      "answer": {
+        "intent": "other",
+        "action": "continue",
+        "reply": "降压药要按本人处方规定的时间、频次和剂量规律服用，不同降压药的用量不一样。不要因为一次血压正常就自行停药或加减量，服后明显头晕要联系医护。请对照处方或药盒说明确认服用时间和每次用量，个人剂量以药师核对为准。",
+        "emotion": "neutral",
+        "gesture": "open_arms",
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 5073
+    },
+    {
+      "section": "reminder",
+      "user": "今天还有什么安排？",
+      "answer": {
+        "intent": "reminder",
+        "action": "continue",
+        "reply": "接下来是15点整确认社区活动安排。",
+        "emotion": "neutral",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": null
+        }
+      },
+      "model_ms": 3815
+    },
+    {
+      "section": "reminder",
+      "user": "现在该吃药了吗？",
+      "answer": {
+        "intent": "reminder",
+        "action": "continue",
+        "reply": "今天的用药提醒时间是今天8点整。这只是预设时间，实际服药请按医嘱。现在已经过了这个时间，您今天已经吃过药了吗？",
+        "emotion": "neutral",
+        "gesture": null,
+        "_reminder_transition": {
+          "pending_question": {
+            "kind": "medication_taken",
+            "occurrence_id": "demo-medication@2026-10-24"
+          }
+        }
+      },
+      "model_ms": 2606
+    },
+    {
+      "section": "dining",
+      "user": "我想给食堂提个意见，今天的菜太咸了，下次想吃清淡一点的。",
+      "answer": {
+        "intent": "dining",
+        "action": "continue",
+        "reply": "您觉得今天的菜太咸了。希望想吃清淡一点的。要记入食堂反馈表吗？",
+        "emotion": "neutral",
+        "gesture": null,
+        "_dining_transition": {
+          "reply": "您觉得今天的菜太咸了。希望想吃清淡一点的。要记入食堂反馈表吗？",
+          "pending": {
+            "stage": "await_confirm",
+            "request_id": "92623cc8a66941d4aed8e1e0e0dae6dd",
+            "category": "taste",
+            "item": "今天的菜",
+            "observation": "太咸了",
+            "request": "想吃清淡一点的"
+          }
+        }
+      },
+      "model_ms": 3016
+    },
+    {
+      "section": "dining",
+      "user": "确认提交",
+      "answer": {
+        "intent": "dining",
+        "action": "continue",
+        "reply": "好的，已经记入食堂反馈表了。",
+        "emotion": "neutral",
+        "gesture": null,
+        "_dining_transition": {
+          "reply": "好的，已经记入食堂反馈表了。",
+          "pending": null,
+          "save": {
+            "id": "92623cc8a66941d4aed8e1e0e0dae6dd",
+            "category": "taste",
+            "item": "今天的菜",
+            "observation": "太咸了",
+            "request": "想吃清淡一点的",
+            "source": "voice_confirmed",
+            "status": "new",
+            "demo": true
+          }
+        }
+      },
+      "model_ms": 2483
+    }
+  ],
+  "dining_record_saved": true
+}
