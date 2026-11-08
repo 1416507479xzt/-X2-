@@ -82,19 +82,31 @@ unset DOUBAO_SPEECH_API_KEY
 自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。2026-11-06 已核对手头 AimDK v1.0.0 的服务定义，并分别发送过 `only_voice` 与 `normal` 请求；响应状态为 UNKNOWN，没有完成交互模块重启及实际行为验证，不能据此判定当前模式。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且现场机器仍须核对固件与服务定义**：
 
 ```bash
+source /home/agi/aimdk/install/local_setup.bash
 ros2 service call /aimdk_5Fmsgs/srv/SetAgentPropertiesRequest aimdk_msgs/srv/SetAgentPropertiesRequest "{contents: {properties: [{key: {value: 2}, value: 'only_voice'}]}}"
+```
+
+以上两行在 PC2 执行。接着登录 PC3 执行：
+
+```bash
 aima em stop-app agent
 aima em start-app agent
 ```
 
-模式切换与恢复尚未在手头机器人上测试。若切换后的实际状态或收音行为不符合官方说明，先恢复原生模式并记录结果。停止自研程序后，官方恢复步骤为：
+`only_voice` 已在手头机器人上完成切换：PC3 重启 `agent` 成功，原生问答不再回应。恢复 `normal` 尚未实测。若切换后的收音行为不符合官方说明，先恢复原生模式并记录结果。停止自研程序后，官方恢复步骤为：
 
 手头 v1.0.0 的 `only_voice` 设置请求曾返回 `header.code=0`、`status.value=0 (UNKNOWN)`；ROS 图虽有 `GetAgentPropertiesRequest` 服务，机载 SDK 却没有该服务的 `.idl` 和 Python 类型。因此不要仅凭返回码或脚本中的手动确认变量宣称模式已切换，需在重启后用真实收音与原生交互行为核对。下方恢复命令应在操作前备好。
 
-**实机例外（2026-11-06）：**手头 X2 的 PC2 `aima em` 应用列表没有 `agent`，在 PC2 直接执行 `aima em stop-app agent` 不会重启交互模块。下方 `aima` 命令是官方通用示例，使用前必须确认交互模块所在计算单元及获准的重启通道。每次新开 SSH 会话，先运行 `source /home/agi/aimdk/install/local_setup.bash`，否则 `ros2 service call` 会报服务类型无效。先把模式设回 `normal`，再核对实际恢复方式；不要反复对 PC2 调用不存在的 `agent` 应用。
+**手头真机位置核对（2026-11-08）：**PC2 的 `aima em` 应用列表没有 `agent`，但从 PC2 通过机器人内部网络 SSH 到 PC3 后，`aima em list-apps` 能列出 `agent`。因此，属性服务请求在已 source AimDK 的 PC2 调用；`aima em stop-app agent` 和 `start-app agent` 应登录 PC3 执行，不能在 PC2 直接运行。PC3 内部地址与会变化的机器人 Wi-Fi 地址不同，不要把 Wi-Fi 地址写死在部署命令里。每次新开 PC2 SSH 会话，先运行 `source /home/agi/aimdk/install/local_setup.bash`，否则 `ros2 service call` 会报服务类型无效。`normal` 恢复仍待实际验证。
 
 ```bash
+source /home/agi/aimdk/install/local_setup.bash
 ros2 service call /aimdk_5Fmsgs/srv/SetAgentPropertiesRequest aimdk_msgs/srv/SetAgentPropertiesRequest "{contents: {properties: [{key: {value: 2}, value: 'normal'}]}}"
+```
+
+以上两行在 PC2 执行。接着登录 PC3 执行：
+
+```bash
 aima em stop-app agent
 aima em start-app agent
 ```

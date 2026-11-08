@@ -98,8 +98,11 @@ class AimdkPcmPlayer:
                 raise AudioFocusError("上一轮音频焦点尚未释放")
             response = await self._call(
                 self.request_client, self._focus_request(self.RequestAudioFocus))
-            if response.reponse.status.value != 1 or not response.focus_response.focus_gain:
-                raise AudioFocusError("机器人未授予音频焦点")
+            status = response.reponse.status.value
+            gain = response.focus_response.focus_gain
+            if status != 1 or not gain:
+                raise AudioFocusError("机器人未授予音频焦点：status=%s focus_gain=%s" %
+                                      (status, gain))
             self._has_focus = True
             self._token = uuid.uuid4().hex
             self._next_publish_time = time.monotonic()

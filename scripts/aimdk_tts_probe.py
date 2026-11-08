@@ -52,10 +52,10 @@ async def synthesize(key, speaker):
     return bytes(audio)
 
 
-async def play(pcm):
+async def play(pcm, priority):
     from x2_agent.aimdk_playback import AimdkPcmPlayer
 
-    player = AimdkPcmPlayer()
+    player = AimdkPcmPlayer(priority=priority)
     try:
         await player.begin()
         try:
@@ -71,6 +71,8 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--play", action="store_true",
                         help="向机器人扬声器播放；必须先确认 only_voice 生效")
+    parser.add_argument("--focus-priority", type=int, choices=(4, 5, 6), default=4,
+                        help="探针音频焦点优先级，允许 4/5/6；默认 4")
     parser.add_argument("--speaker", default=os.environ.get(
         "DOUBAO_TTS_SPEAKER", "zh_female_vv_uranus_bigtts"))
     args = parser.parse_args(argv)
@@ -84,7 +86,7 @@ def main(argv=None):
     try:
         pcm = asyncio.run(synthesize(key, args.speaker))
         if args.play:
-            asyncio.run(play(pcm))
+            asyncio.run(play(pcm, args.focus_priority))
         else:
             print("本次只验证云端 TTS，没有请求机器人音频焦点或扬声器。")
     except Exception as exc:

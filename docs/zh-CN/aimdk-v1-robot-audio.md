@@ -14,10 +14,13 @@
 | 单句云端 ASR | 2.0 小时版 `volc.seedasr.sauc.duration`；收到 1.70 秒 PCM，WebSocket 连接约 204 ms，识别结果为“你好啊。” | 当前机载麦克风到豆包语音识别的链路可用；仍需更多语句核对准确率 |
 | 单句云端 TTS | 2026-11-08 开发电脑首包约 0.84 秒、机器人 PC2 首包约 0.77 秒，均收到约 3.00 秒的 16 kHz PCM | 已验证 PC2 到豆包 TTS 的云端链路；尚未在真机验证音频焦点或扬声器 |
 | 真机 TTS 首次握手 | 首次在机器人终端误输入 46 位方舟 LLM Key，TTS 返回 HTTP 401；电脑端成功使用的豆包语音 Key 为 36 位 | 是凭据类别错误，不能据此判断机载网络或扬声器有故障；已在探针加入 `ark-` 前缀识别 |
+| `only_voice` 真机切换 | PC2 设置模式后，登录 PC3 停止并启动 `agent` 均返回成功；切换前原生问时会回答，切换后不再回答 | 官方过渡流程在这台机器人上初步生效；恢复 `normal` 仍待实测 |
+| 首次扬声器探针 | PC2 云 TTS 首包约 0.89 秒，PCM 约 3.01 秒；音频焦点优先级 4 被拒，未发布 PCM | 这不是 TTS 失败；需按[官方音频焦点规则](https://x2-aimdk.agibot.com/zh-cn/latest/Interface/interactor/voice.html)核对焦点响应并有限调整优先级，不能直接向话题推音频 |
 | 播放接口 | `/aima/hal/audio/playback` 类型为 `aimdk_msgs/msg/AudioPlayback`；音频焦点服务存在 | 仅确认消息与服务定义，尚未验证声音实际播出 |
 | 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 已分别发送 `only_voice` 和 `normal` 请求，但没有通过交互模块重启及实际行为证实模式生效或恢复 |
 | 模式设置响应与查询 | 已发送 `only_voice` 请求，响应 `header.code=0`、`status.value=0 (UNKNOWN)`；`GetAgentPropertiesRequest` 服务在 ROS 图中存在，但机载 SDK 缺少其 `.idl` 和 Python 类型 | 不能凭该响应断言模式已生效，也无法用现有 ROS CLI 直接读取；下一步重启后按实际行为核对，并准备 `normal` 恢复 |
-| PC2 恢复命令实测 | 新 SSH 会话未加载 AimDK 时 `ros2 service call` 返回 `The passed service type is invalid`；PC2 的 `aima em` 应用列表没有 `agent` | 每个新 SSH 会话须先加载机载 AimDK；不可在这台 PC2 上照搬 `aima em stop-app agent`，需确认交互模块所在计算单元及获准的重启方式 |
+| PC2 与 PC3 的应用位置 | 新 SSH 会话未加载 AimDK 时 `ros2 service call` 返回 `The passed service type is invalid`；PC2 的 `aima em` 应用列表没有 `agent`。2026-11-08 从 PC2 经机器人内部网络 SSH 到 PC3，`aima em list-apps` 确认其中有 `agent` | 模式属性服务在已 source AimDK 的 PC2 调用；官方要求的 `agent` 重启应在 PC3 执行。重启和模式生效尚未实测 |
+| 当前原生交互 | 2026-11-08 机器人重启后，不运行自研 Agent，原生唤醒并询问时间会语音回答 | 当前仍能使用原生交互；这是切换前的行为基线 |
 
 一次 BEGIN 后又收到 BEGIN，不能据此断言完整话语丢失。单句 ASR 已能返回文本；尚未系统测试不同说话方式的准确率。机上系统 Python 缺少 `websockets`；当前离线包把所需版本放在 `vendor/`，不修改系统 Python 或机载 AimDK。
 
@@ -33,7 +36,7 @@
 
 ## 仍需逐项验证
 
-1. 在 PC2 新 SSH 会话加载 AimDK 后先发送 `normal` 恢复请求；确认交互模块所在计算单元和正确重启方式，再通过原生回复行为验证恢复。当前 PC2 的 `aima em` 不支持 `agent`，不能继续照搬官方重启命令。
+1. `only_voice` 已在手头机器人上完成切换并通过原生问答停止的行为验证。停止自研程序后按官方顺序在 PC2 设置 `normal`，再到 PC3 重启 `agent`，以原生语音回答验证恢复；此恢复步骤待实测。
 2. 测试同一套业务代码的 ASR→大模型→TTS 完整语音对话，再测试表情和预设动作及异常恢复。
 3. 获取赛方机器人后先运行预检。未知版本、架构或字段不兼容时停止，不绕过检查直接运行。
 
