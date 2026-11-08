@@ -7,6 +7,7 @@ routes the Agent's PCM output to the opt-in ROS player.
 
 import asyncio
 import base64
+from contextlib import suppress
 import json
 import logging
 import uuid
@@ -70,9 +71,11 @@ class AimdkLocalTransport:
 
     async def __aexit__(self, *_):
         self._closed = True
-        if self._spin_task is not None:
-            await self._spin_task
         try:
+            if self._spin_task is not None:
+                self._spin_task.cancel()
+                with suppress(asyncio.CancelledError):
+                    await self._spin_task
             await self.player.end()
         finally:
             self.node.destroy_node()

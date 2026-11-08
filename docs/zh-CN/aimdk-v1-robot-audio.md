@@ -20,6 +20,7 @@
 | 首次释放响应 | 更新诊断后重复短句探针，第一次 `AbandonAudioFocus` 返回 `status=1, focus_gain=true` | 不能仅凭 `status=1` 判定释放；已加入最多一次同参数重试，等待 `focus_gain=false` 的真机复测 |
 | ROS 服务发现竞态 | 更新释放逻辑后的首次重测，在新建 ROS 客户端后立即报“音频焦点服务未就绪”，没有播音 | 服务在 ROS 图中存在；客户端启动时须有限等待 DDS 发现。代码已加入最长 3 秒等待，待真机复测 |
 | 扬声器与焦点完整复测 | 2026-11-08 PC2 云 TTS 首包约 0.68 秒、PCM 3.00 秒；机器人完整播出测试句，程序打印“已发布测试语音并释放音频焦点” | 优先级 6、有限 DDS 发现等待和最多一次同身份焦点释放重试在手头 X2 上完成单句验收 |
+| 完整 Agent 首次启动 | 2026-11-08 两把 Key 长度正确，预检旧版通过，但 `httpcore` 异步客户端报“requires installation of httpcore[asyncio]”，Mini 请求没有发出 | 旧离线包漏了 Python 3.10 下 `anyio` 所需的 `exceptiongroup` 和 `typing_extensions`；已固定版本并将模块导入纳入预检，待新版真机复测 |
 | 播放接口 | `/aima/hal/audio/playback` 类型为 `aimdk_msgs/msg/AudioPlayback`；音频焦点服务存在 | 仅确认消息与服务定义，尚未验证声音实际播出 |
 | 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 已分别发送 `only_voice` 和 `normal` 请求，但没有通过交互模块重启及实际行为证实模式生效或恢复 |
 | 模式设置响应与查询 | 已发送 `only_voice` 请求，响应 `header.code=0`、`status.value=0 (UNKNOWN)`；`GetAgentPropertiesRequest` 服务在 ROS 图中存在，但机载 SDK 缺少其 `.idl` 和 Python 类型 | 不能凭该响应断言模式已生效，也无法用现有 ROS CLI 直接读取；下一步重启后按实际行为核对，并准备 `normal` 恢复 |
@@ -44,4 +45,4 @@
 2. 测试同一套业务代码的 ASR→大模型→TTS 完整语音对话，再测试表情和预设动作及异常恢复。
 3. 获取赛方机器人后先运行预检。未知版本、架构或字段不兼容时停止，不绕过检查直接运行。
 
-**当前结论：**已实测手头真机的麦克风 PCM 输入、一次豆包语音 ASR 成功转写、云端 TTS 合成和优先级 6 的扬声器完整播报及焦点释放。模型、表情动作及多环节连续演示尚未完成真机验收。仿真与真机共用业务逻辑，但还不能宣称赛方机器人零修改运行已得到验证。
+**当前结论：**已实测手头真机的麦克风 PCM 输入、一次豆包语音 ASR 成功转写、云端 TTS 合成和优先级 6 的扬声器完整播报及焦点释放。完整 Agent 首次启动暴露离线依赖缺口，修复包尚待真机复测；模型、表情动作及多环节连续演示尚未完成真机验收。仿真与真机共用业务逻辑，但还不能宣称赛方机器人零修改运行已得到验证。

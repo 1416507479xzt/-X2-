@@ -15,7 +15,8 @@ from zipfile import ZipFile, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED = {"websockets", "httpx", "pyyaml", "pypinyin", "certifi",
-            "h11", "httpcore", "idna", "sniffio", "anyio"}
+            "h11", "httpcore", "idna", "sniffio", "anyio",
+            "exceptiongroup", "typing-extensions"}
 
 
 def download_wheels(wheelhouse):

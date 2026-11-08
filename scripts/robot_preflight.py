@@ -28,7 +28,9 @@ def main():
         problems.append(str(exc))
     print("OS=%s machine=%s Python=%s AimDK=%s" %
           (platform.system(), platform.machine(), platform.python_version(), version))
-    for module in ("rclpy", "aimdk_msgs", "websockets", "httpx", "yaml", "pypinyin"):
+    for module in ("rclpy", "aimdk_msgs", "websockets", "httpx", "httpcore",
+                   "anyio", "sniffio", "exceptiongroup", "typing_extensions",
+                   "yaml", "pypinyin"):
         try:
             imported = importlib.import_module(module)
             print(module, getattr(imported, "__version__", "import OK"))
