@@ -55,7 +55,7 @@ python3 scripts/robot_preflight.py
 |---|---|---|
 | 麦克风 | `python3 scripts/aimdk_mic_probe.py --duration 60 --stream-id 1`（仅已验证的 v1.0.0） | 有完整非空 PCM；这一步已在手头 X2 实测 |
 | 云端识别 | 按下面的临时密钥步骤执行 `aimdk_asr_probe.py` | 手头 X2 已一次识别为“你好啊。”；更多语句准确率待测 |
-| 云端合成 | `python3 scripts/aimdk_tts_probe.py`，默认不播放 | 开发电脑已得到约 3 秒 PCM；真机云端网络待测 |
+| 云端合成 | `python3 scripts/aimdk_tts_probe.py`，默认不播放 | 开发电脑和手头 X2 PC2 均已得到约 3 秒 PCM；真机扬声器待测 |
 | 自研对话 | 按第 4 节切换模式后运行完整 Agent | 能完成唤醒、上下文、回答；尚未真机实测 |
 | 扬声器 | 完整 Agent 的 TTS 通过 AimDK 音频焦点播出 | 实际听到语音且不与安全播报冲突；尚未真机实测 |
 | 表情动作 | 语音验收后启用 AimDK 表现后端 | 表情和预设动作与回答配合、执行安全；尚未真机实测 |

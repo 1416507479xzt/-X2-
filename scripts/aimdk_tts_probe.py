@@ -77,6 +77,8 @@ def main(argv=None):
     key = os.environ.get("DOUBAO_SPEECH_API_KEY", "")
     if not key:
         parser.error("缺少 DOUBAO_SPEECH_API_KEY")
+    if key.startswith("ark-"):
+        parser.error("这里输入了火山方舟 LLM Key；请使用豆包语音控制台的 API Key")
     if args.play and os.environ.get("X2_ONLY_VOICE_CONFIRMED") != "1":
         parser.error("播放前须确认 only_voice 已生效，并设置 X2_ONLY_VOICE_CONFIRMED=1")
     try:
@@ -85,7 +87,11 @@ def main(argv=None):
             asyncio.run(play(pcm))
         else:
             print("本次只验证云端 TTS，没有请求机器人音频焦点或扬声器。")
-    except (OSError, RuntimeError, ValueError, TimeoutError) as exc:
+    except Exception as exc:
+        status = getattr(getattr(exc, "response", None), "status_code", None)
+        if status in (401, 403):
+            raise SystemExit("云 TTS 握手 HTTP %s；请核对豆包语音 Key 和 TTS 服务权限" %
+                             status) from exc
         raise SystemExit("TTS/播放探针失败：%s: %s" %
                          (type(exc).__name__, exc)) from exc
 
