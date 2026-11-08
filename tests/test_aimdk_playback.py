@@ -21,6 +21,26 @@ class Message:
 
 
 class PlaybackTests(unittest.IsolatedAsyncioTestCase):
+    async def test_focus_client_waits_for_dds_discovery(self):
+        player = AimdkPcmPlayer.__new__(AimdkPcmPlayer)
+        player.node = object()
+        player.ros = SimpleNamespace(spin_once=lambda node, timeout_sec=0: None)
+        checks = 0
+        expected = object()
+
+        class Client:
+            def service_is_ready(self):
+                nonlocal checks
+                checks += 1
+                return checks >= 3
+
+            def call_async(self, request):
+                return SimpleNamespace(done=lambda: True, result=lambda: expected)
+
+        result = await player._call(Client(), Request(), timeout=0.2)
+        self.assertIs(result, expected)
+        self.assertGreaterEqual(checks, 3)
+
     def make_player(self, granted=True, release_confirmed=True):
         player = AimdkPcmPlayer.__new__(AimdkPcmPlayer)
         player.pkg_name = "eldercare_agent"

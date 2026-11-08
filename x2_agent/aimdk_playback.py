@@ -67,9 +67,15 @@ class AimdkPcmPlayer:
         if msg.pkg_name == self.pkg_name and not msg.focus_gain:
             self._has_focus = False
 
-    async def _call(self, client, request, timeout=2.0):
+    async def _call(self, client, request, timeout=3.0):
+        # A freshly created ROS client may need a short DDS discovery period
+        # even when the focus service is already running on PC3.
+        deadline = time.monotonic() + timeout
+        while not client.service_is_ready() and time.monotonic() < deadline:
+            self.ros.spin_once(self.node, timeout_sec=0)
+            await asyncio.sleep(0.02)
         if not client.service_is_ready():
-            raise AudioFocusError("音频焦点服务未就绪")
+            raise AudioFocusError("音频焦点服务在 %.1f 秒内未就绪" % timeout)
         future = client.call_async(request)
         deadline = time.monotonic() + timeout
         while not future.done() and time.monotonic() < deadline:
