@@ -514,8 +514,7 @@ class DoubaoAgent:
                 dialogue = self.health_flow.model_dialogue
                 started = time.perf_counter()
                 result = await generate_dialogue(
-                    self.llm, asr_text, self._model_context(), a.llm_model, a.ark_key,
-                    timeout=a.model_reply_timeout)
+                    self.llm, asr_text, self._model_context(), a.llm_model, a.ark_key)
                 self.metrics.record_duration("health_model_ms", (time.perf_counter() - started) * 1000)
                 if result is None:
                     reply_route = "health_model_fallback"
@@ -751,8 +750,7 @@ class DoubaoAgent:
         try:
             if self.health_flow is not None and getattr(a, "health_semantic", "model") == "model":
                 result = await generate_dialogue(self.llm, "来访者已语音唤醒，请开始问候。",
-                    self._model_context(greeting=True), a.llm_model, a.ark_key,
-                    timeout=a.model_greeting_timeout)
+                    self._model_context(greeting=True), a.llm_model, a.ark_key, timeout=3.0)
                 if result is not None:
                     logger.info("agent     模型开场选择: emotion=%s gesture=%s",
                                 result["emotion"], result["gesture"])
@@ -972,10 +970,6 @@ def parse_args(argv=None):
                    help="火山方舟 API Key（LLM），或环境变量 ARK_API_KEY")
     p.add_argument("--llm-model", default=os.environ.get("DOUBAO_LLM_MODEL",
                    AgentConfig.llm_model))
-    p.add_argument("--model-greeting-timeout", type=float, default=AgentConfig.model_greeting_timeout,
-                   help="语音唤醒后等待模型开场的秒数，默认 3")
-    p.add_argument("--model-reply-timeout", type=float, default=AgentConfig.model_reply_timeout,
-                   help="等待模型完成一轮回答和必要修正的秒数，默认 8")
     p.add_argument("--tts-speaker", default=os.environ.get("DOUBAO_TTS_SPEAKER",
                    AgentConfig.tts_speaker))
     p.add_argument("--tts-mode", choices=["bidirectional", "sentence"],
