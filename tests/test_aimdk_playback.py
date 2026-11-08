@@ -24,7 +24,7 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
     def make_player(self, granted=True, release_confirmed=True):
         player = AimdkPcmPlayer.__new__(AimdkPcmPlayer)
         player.pkg_name = "eldercare_agent"
-        player.priority = 4
+        player.priority = 6
         player.RequestAudioFocus = Service
         player.AbandonAudioFocus = Service
         player.request_client = "request"
@@ -59,7 +59,7 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
             await player.begin()
         self.assertFalse(player._lock.locked())
         self.assertEqual(published, [])
-        self.assertEqual(calls[0], ("request", "eldercare_agent", 4, 0))
+        self.assertEqual(calls[0], ("request", "eldercare_agent", 6, 0))
 
     async def test_pcm_format_and_focus_release_match(self):
         player, published, calls = self.make_player()
@@ -99,7 +99,7 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
     async def test_release_must_be_confirmed_by_focus_response(self):
         player, published, _ = self.make_player(release_confirmed=False)
         await player.begin()
-        with self.assertRaisesRegex(AudioFocusError, "释放音频焦点失败"):
+        with self.assertRaisesRegex(AudioFocusError, "释放音频焦点结果未确认"):
             await player.end()
         self.assertTrue(player._has_focus)
         self.assertEqual(published, [])

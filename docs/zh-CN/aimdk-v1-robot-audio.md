@@ -16,6 +16,7 @@
 | 真机 TTS 首次握手 | 首次在机器人终端误输入 46 位方舟 LLM Key，TTS 返回 HTTP 401；电脑端成功使用的豆包语音 Key 为 36 位 | 是凭据类别错误，不能据此判断机载网络或扬声器有故障；已在探针加入 `ark-` 前缀识别 |
 | `only_voice` 真机切换 | PC2 设置模式后，登录 PC3 停止并启动 `agent` 均返回成功；切换前原生问时会回答，切换后不再回答 | 官方过渡流程在这台机器人上初步生效；恢复 `normal` 仍待实测 |
 | 首次扬声器探针 | PC2 云 TTS 首包约 0.89 秒，PCM 约 3.01 秒；音频焦点优先级 4 被拒，未发布 PCM | 这不是 TTS 失败；需按[官方音频焦点规则](https://x2-aimdk.agibot.com/zh-cn/latest/Interface/interactor/voice.html)核对焦点响应并有限调整优先级，不能直接向话题推音频 |
+| 优先级 6 播放 | 云 TTS 首包约 0.72 秒，PCM 约 2.99 秒；机器人完整播出测试句。探针结束时报告焦点关闭错误，手动调用同标识的 `AbandonAudioFocus` 得到 `status=1, focus_gain=false` | 播放链路已验证；程序自动释放焦点尚需修复和复测。正式 Agent 的播放优先级改为 6，未提高到系统安全播报等级 |
 | 播放接口 | `/aima/hal/audio/playback` 类型为 `aimdk_msgs/msg/AudioPlayback`；音频焦点服务存在 | 仅确认消息与服务定义，尚未验证声音实际播出 |
 | 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 已分别发送 `only_voice` 和 `normal` 请求，但没有通过交互模块重启及实际行为证实模式生效或恢复 |
 | 模式设置响应与查询 | 已发送 `only_voice` 请求，响应 `header.code=0`、`status.value=0 (UNKNOWN)`；`GetAgentPropertiesRequest` 服务在 ROS 图中存在，但机载 SDK 缺少其 `.idl` 和 Python 类型 | 不能凭该响应断言模式已生效，也无法用现有 ROS CLI 直接读取；下一步重启后按实际行为核对，并准备 `normal` 恢复 |
@@ -40,4 +41,4 @@
 2. 测试同一套业务代码的 ASR→大模型→TTS 完整语音对话，再测试表情和预设动作及异常恢复。
 3. 获取赛方机器人后先运行预检。未知版本、架构或字段不兼容时停止，不绕过检查直接运行。
 
-**当前结论：**已实测手头真机的麦克风 PCM 输入、一次豆包语音 ASR 成功转写和一次云端 TTS 合成。模型、真机扬声器、表情动作及多环节连续演示尚未完成真机验收。仿真与真机共用业务逻辑，但还不能宣称赛方机器人零修改运行已得到验证。
+**当前结论：**已实测手头真机的麦克风 PCM 输入、一次豆包语音 ASR 成功转写、云端 TTS 合成和优先级 6 的扬声器完整播报。播放后自动释放焦点、模型、表情动作及多环节连续演示尚未完成真机验收。仿真与真机共用业务逻辑，但还不能宣称赛方机器人零修改运行已得到验证。

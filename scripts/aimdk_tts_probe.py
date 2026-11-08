@@ -64,7 +64,13 @@ async def play(pcm, priority):
             await player.end()
         print("已发布测试语音并释放音频焦点；请核对机器人是否实际发声。", flush=True)
     finally:
-        player.close()
+        # Keep the original service error visible if focus release failed.
+        failed = sys.exc_info()[0] is not None
+        try:
+            player.close()
+        except Exception:
+            if not failed:
+                raise
 
 
 def main(argv=None):

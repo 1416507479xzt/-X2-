@@ -28,7 +28,7 @@ class AimdkPcmPlayer:
     call StopAudioPlay, which could interrupt system safety announcements.
     """
 
-    def __init__(self, *, pkg_name="eldercare_agent", priority=4, node=None):
+    def __init__(self, *, pkg_name="eldercare_agent", priority=6, node=None):
         if not pkg_name or not 1 <= priority <= 10:
             raise ValueError("invalid playback identity or priority")
         try:
@@ -156,9 +156,11 @@ class AimdkPcmPlayer:
                     await asyncio.sleep(delay)
                 response = await self._call(self.abandon_client,
                                             self._focus_request(self.AbandonAudioFocus))
-                if (response.reponse.status.value != 1 or
-                        response.focus_response.focus_gain):
-                    raise AudioFocusError("释放音频焦点失败，结果未确认")
+                status = response.reponse.status.value
+                gain = response.focus_response.focus_gain
+                if status != 1 or gain:
+                    raise AudioFocusError("释放音频焦点结果未确认：status=%s focus_gain=%s" %
+                                          (status, gain))
                 self._has_focus = False
         finally:
             self._lock.release()
