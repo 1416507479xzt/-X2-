@@ -144,6 +144,19 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(release_count, 2)
         self.assertFalse(player._has_focus)
 
+    def test_close_after_ros_sigint_shutdown(self):
+        player = AimdkPcmPlayer.__new__(AimdkPcmPlayer)
+        player._has_focus = False
+        player.owns_node = True
+        destroyed = []
+        shutdown = []
+        player.node = SimpleNamespace(destroy_node=lambda: destroyed.append(True))
+        player.ros = SimpleNamespace(ok=lambda: False,
+                                     shutdown=lambda: shutdown.append(True))
+        player.close()
+        self.assertEqual(destroyed, [True])
+        self.assertEqual(shutdown, [])
+
 
 if __name__ == "__main__":
     unittest.main()

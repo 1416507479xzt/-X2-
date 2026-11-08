@@ -1,6 +1,6 @@
 # 从新电脑复现 X2 自研语音 Agent
 
-本文对应仓库当前源码。目标是让同一套对话业务逻辑在灵犀 X2 上处理语音唤醒、连续问询、生活协助和食堂意见，并通过 AimDK 播报与表现。**截至 2026-11-06，手头 X2 的麦克风 VAD PCM 输入和一次豆包语音 ASR 转写完成实测；完整真机对话尚未验收。**各环节事实见[真机接入记录](aimdk-v1-robot-audio.md)。
+本文对应仓库当前源码。目标是让同一套对话业务逻辑在灵犀 X2 上处理语音唤醒、连续问询、生活协助和食堂意见，并通过 AimDK 播报与表现。**截至 2026-11-08，手头 X2 已实测麦克风 PCM、单句 ASR、云端 TTS、机器人扬声器和焦点释放；完整 Agent 已接收音频，但唤醒词尚未被准确识别，完整真机对话未验收。**各环节事实见[当前验收状态](aimdk-v1-robot-audio.md)和[当天联调记录](2026-11-08-x2-real-robot-integration.md)。
 
 ## 0. 先确认目标机器
 
@@ -55,7 +55,7 @@ python3 scripts/robot_preflight.py
 |---|---|---|
 | 麦克风 | `python3 scripts/aimdk_mic_probe.py --duration 60 --stream-id 1`（仅已验证的 v1.0.0） | 有完整非空 PCM；这一步已在手头 X2 实测 |
 | 云端识别 | 按下面的临时密钥步骤执行 `aimdk_asr_probe.py` | 手头 X2 已一次识别为“你好啊。”；更多语句准确率待测 |
-| 云端合成 | `python3 scripts/aimdk_tts_probe.py`，默认不播放 | 开发电脑和手头 X2 PC2 均已得到约 3 秒 PCM；真机扬声器待测 |
+| 云端合成 | `python3 scripts/aimdk_tts_probe.py`，默认不播放 | 开发电脑和手头 X2 PC2 均已得到约 3 秒 PCM |
 | 自研对话 | 按第 4 节切换模式后运行完整 Agent | 能完成唤醒、上下文、回答；尚未真机实测 |
 | 扬声器 | AimDK 焦点优先级 6 + PCM 话题 | 手头 X2 已完整播出探针短句并确认自动释放焦点；完整 Agent 待测 |
 | 表情动作 | 语音验收后启用 AimDK 表现后端 | 表情和预设动作与回答配合、执行安全；尚未真机实测 |
@@ -79,7 +79,7 @@ unset DOUBAO_SPEECH_API_KEY
 
 ## 4. 运行完整 Agent 与恢复原生交互
 
-自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。2026-11-06 已核对手头 AimDK v1.0.0 的服务定义，并分别发送过 `only_voice` 与 `normal` 请求；响应状态为 UNKNOWN，没有完成交互模块重启及实际行为验证，不能据此判定当前模式。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且现场机器仍须核对固件与服务定义**：
+自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。手头 AimDK v1.0.0 机器已完成 PC2 模式设置和 PC3 `agent` 重启，并通过原生问答停止验证切换生效；恢复 `normal` 的实际行为仍待验证。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且现场机器仍须核对固件与服务定义**：
 
 ```bash
 source /home/agi/aimdk/install/local_setup.bash

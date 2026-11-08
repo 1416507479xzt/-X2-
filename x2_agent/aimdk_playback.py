@@ -185,4 +185,7 @@ class AimdkPcmPlayer:
             raise AudioFocusError("先调用 end() 释放焦点后再关闭")
         if self.owns_node:
             self.node.destroy_node()
-            self.ros.shutdown()
+            # rclpy's SIGINT handler can shut the default context down before
+            # asyncio's cancellation cleanup reaches this method.
+            if self.ros.ok():
+                self.ros.shutdown()
