@@ -43,9 +43,11 @@ class LlmClient:
     async def stream(self, system_prompt: str, history: List[Dict[str, Any]],
                      model: str, api_key: str,
                      tools: Optional[List[Dict[str, Any]]] = None) -> AsyncIterator[Tuple[str, Any]]:
+        # Ark's Kimi-K3.1-Pro endpoint accepts temperature 0.6 only.
+        temperature = 0.6 if model.startswith('kimi-k3-1-pro-') else 0.7
         payload = {'model': model,
                    'messages': [{'role': 'system', 'content': system_prompt}] + list(history),
-                   'temperature': 0.7, 'stream': True}
+                   'temperature': temperature, 'stream': True}
         if tools:
             payload['tools'] = tools
         if model not in self.unsupported_thinking:

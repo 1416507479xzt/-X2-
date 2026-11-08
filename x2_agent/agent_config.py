@@ -33,6 +33,8 @@ class AgentConfig:
 
     # 服务配置
     llm_model: str = "doubao-seed-2-0-mini-260428"
+    model_greeting_timeout: float = 3.0
+    model_reply_timeout: float = 8.0
     tts_speaker: str = "zh_female_vv_uranus_bigtts"
     tts_mode: str = "bidirectional"  # "bidirectional" 或 "sentence"
     asr_resource_id: str = "volc.seedasr.sauc.duration"
@@ -90,6 +92,8 @@ class AgentConfig:
             raise ValueError("tts_mode 必须是 'bidirectional' 或 'sentence'")
         if self.health_semantic not in ("model", "auto", "rules"):
             raise ValueError("health_semantic 必须是 'model'、'auto' 或 'rules'")
+        if self.model_greeting_timeout <= 0 or self.model_reply_timeout <= 0:
+            raise ValueError("模型等待时限必须大于 0 秒")
         if self.presentation_backend not in ("unity", "aimdk", "none"):
             raise ValueError("未知表现后端")
         if self.transport not in ("unity", "aimdk"):
