@@ -12,8 +12,9 @@
 | 实时收音 | 内置麦 `stream_id=1`；VAD 1=BEGIN、2=PROCESSING、3=END | 只读探针能收到非空 PCM；订阅用 `BEST_EFFORT` + `VOLATILE` 避免将缓存消息当作实时结果 |
 | 60 秒只读探针 | BEGIN 8 次、END 7 次、完整非空片段 7 段；其他流 0、超长丢弃 0 | 证实 PC2 可收取完整语音片段；其中一段 119040 字节，按 16 kHz 单声道 S16LE 约 3.72 秒 |
 | 单句云端 ASR | 2.0 小时版 `volc.seedasr.sauc.duration`；收到 1.70 秒 PCM，WebSocket 连接约 204 ms，识别结果为“你好啊。” | 当前机载麦克风到豆包语音识别的链路可用；仍需更多语句核对准确率 |
+| 单句云端 TTS | 2026-11-08 在开发电脑用现有语音 Key 和音色合成测试句，首包约 0.84 秒，收到约 3.00 秒的 16 kHz PCM | 仅验证云端合成；尚未在真机验证音频焦点或扬声器 |
 | 播放接口 | `/aima/hal/audio/playback` 类型为 `aimdk_msgs/msg/AudioPlayback`；音频焦点服务存在 | 仅确认消息与服务定义，尚未验证声音实际播出 |
-| 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 机载 v1.0.0 字段与官方 `only_voice` 过渡步骤吻合；尚未实际切换或恢复 |
+| 原生交互模式接口 | `/aimdk_5Fmsgs/srv/SetAgentPropertiesRequest` 存在；`contents.properties[].key.value` 中 `AGENT_PROPERTY_RUN_MODE=0x02`，值为字符串 | 已分别发送 `only_voice` 和 `normal` 请求，但没有通过交互模块重启及实际行为证实模式生效或恢复 |
 | 模式设置响应与查询 | 已发送 `only_voice` 请求，响应 `header.code=0`、`status.value=0 (UNKNOWN)`；`GetAgentPropertiesRequest` 服务在 ROS 图中存在，但机载 SDK 缺少其 `.idl` 和 Python 类型 | 不能凭该响应断言模式已生效，也无法用现有 ROS CLI 直接读取；下一步重启后按实际行为核对，并准备 `normal` 恢复 |
 | PC2 恢复命令实测 | 新 SSH 会话未加载 AimDK 时 `ros2 service call` 返回 `The passed service type is invalid`；PC2 的 `aima em` 应用列表没有 `agent` | 每个新 SSH 会话须先加载机载 AimDK；不可在这台 PC2 上照搬 `aima em stop-app agent`，需确认交互模块所在计算单元及获准的重启方式 |
 
@@ -26,6 +27,7 @@
 - `x2_agent/aimdk_playback.py`：申请音频焦点、发布 PCM、释放焦点；仅完成代码与离线测试，未真机播放。
 - `x2_agent/aimdk_runtime.py`：按机载版本选择内置麦编号并核对音频接口。v1.0.0 的编号 1 已实测；v1.1.0 的编号 0 只依据官方文档静态适配。
 - `scripts/aimdk_mic_probe.py`、`scripts/aimdk_asr_probe.py`：分别做只读 PCM 检查和单句云端转写，两者均已在手头真机运行。
+- `scripts/aimdk_tts_probe.py`：默认只在内存中合成短句 PCM；显式 `--play` 且确认 `only_voice` 后才请求音频焦点并播出。云端合成已在开发电脑验证，真机播出待验收。
 - `scripts/robot_preflight.py`：只读检查系统、依赖和 ROS 音频字段。
 
 ## 仍需逐项验证
@@ -34,4 +36,4 @@
 2. 测试同一套业务代码的 ASR→大模型→TTS 完整语音对话，再测试表情和预设动作及异常恢复。
 3. 获取赛方机器人后先运行预检。未知版本、架构或字段不兼容时停止，不绕过检查直接运行。
 
-**当前结论：**已实测手头真机的麦克风 PCM 输入和一次豆包语音 ASR 成功转写；模型、TTS、表情动作及多环节连续演示尚未完成真机验收。仿真与真机共用业务逻辑，但还不能宣称赛方机器人零修改运行已得到验证。
+**当前结论：**已实测手头真机的麦克风 PCM 输入和一次豆包语音 ASR 成功转写；云端 TTS 合成只在开发电脑单独验证。模型、真机扬声器、表情动作及多环节连续演示尚未完成真机验收。仿真与真机共用业务逻辑，但还不能宣称赛方机器人零修改运行已得到验证。

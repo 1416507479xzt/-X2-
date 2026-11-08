@@ -55,6 +55,7 @@ python3 scripts/robot_preflight.py
 |---|---|---|
 | 麦克风 | `python3 scripts/aimdk_mic_probe.py --duration 60 --stream-id 1`（仅已验证的 v1.0.0） | 有完整非空 PCM；这一步已在手头 X2 实测 |
 | 云端识别 | 按下面的临时密钥步骤执行 `aimdk_asr_probe.py` | 手头 X2 已一次识别为“你好啊。”；更多语句准确率待测 |
+| 云端合成 | `python3 scripts/aimdk_tts_probe.py`，默认不播放 | 开发电脑已得到约 3 秒 PCM；真机云端网络待测 |
 | 自研对话 | 按第 4 节切换模式后运行完整 Agent | 能完成唤醒、上下文、回答；尚未真机实测 |
 | 扬声器 | 完整 Agent 的 TTS 通过 AimDK 音频焦点播出 | 实际听到语音且不与安全播报冲突；尚未真机实测 |
 | 表情动作 | 语音验收后启用 AimDK 表现后端 | 表情和预设动作与回答配合、执行安全；尚未真机实测 |
@@ -78,7 +79,7 @@ unset DOUBAO_SPEECH_API_KEY
 
 ## 4. 运行完整 Agent 与恢复原生交互
 
-自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。2026-11-06 已只读核对手头 AimDK v1.0.0 的服务存在，`AGENT_PROPERTY_RUN_MODE=2` 且值为字符串；尚未实际切换。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且现场机器仍须核对固件与服务定义**：
+自研语音系统与 X2 Ultra 原生交互会争用音频。按照**机载版本对应的官方说明**，在获得当前机器人操作权限并确认恢复流程后，切换 `only_voice`，再运行 Agent。2026-11-06 已核对手头 AimDK v1.0.0 的服务定义，并分别发送过 `only_voice` 与 `normal` 请求；响应状态为 UNKNOWN，没有完成交互模块重启及实际行为验证，不能据此判定当前模式。官方[过渡方案](https://x2-aimdk.agibot.com/zh-cn/latest/faq/temp_works.html)给出的参考命令如下；**仅适用于 X2 Ultra，且现场机器仍须核对固件与服务定义**：
 
 ```bash
 ros2 service call /aimdk_5Fmsgs/srv/SetAgentPropertiesRequest aimdk_msgs/srv/SetAgentPropertiesRequest "{contents: {properties: [{key: {value: 2}, value: 'only_voice'}]}}"
@@ -98,6 +99,8 @@ aima em stop-app agent
 aima em start-app agent
 ```
 
+在切换模式之前，也可先只验证云端 TTS，不触碰扬声器：在已导出 `DOUBAO_SPEECH_API_KEY` 的终端运行 `python3 scripts/aimdk_tts_probe.py`。仅当交互模块重启、`only_voice` 已通过实际行为确认，且已备好恢复流程时，才运行 `X2_ONLY_VOICE_CONFIRMED=1 python3 scripts/aimdk_tts_probe.py --play` 验证音频焦点与扬声器。这个标志只是人工确认，不会代替真实模式检查。
+
 在机器人 SSH 终端、已加载 AimDK 环境并完成模式切换后，临时提供**两把**密钥：
 
 ```bash
@@ -105,7 +108,7 @@ read -r -s -p '豆包语音 API Key: ' DOUBAO_SPEECH_API_KEY; echo
 read -r -s -p '火山方舟 API Key: ' ARK_API_KEY; echo
 export DOUBAO_SPEECH_API_KEY ARK_API_KEY
 export X2_ONLY_VOICE_CONFIRMED=1
-python3 scripts/run_robot_agent.py --transport aimdk --enable-robot-audio --competition-mode --health-semantic model --presentation-backend none
+python3 scripts/run_robot_agent.py --transport aimdk --enable-robot-audio --competition-mode --health-semantic model --llm-model doubao-seed-2-0-mini-260428 --presentation-backend none
 ```
 
 先只测语音。确认机器人稳定站立、动作服务字段与机载版本匹配且现场安全后，才把最后两个参数换成 `--presentation-backend aimdk --enable-robot-presentation` 进行表情动作验收。模型只选择预设的表情和动作名称，代码负责参数映射与安全约束。停止程序后，在同一终端执行 `unset DOUBAO_SPEECH_API_KEY ARK_API_KEY X2_ONLY_VOICE_CONFIRMED`，并按官方流程恢复 `normal`。程序不会自动切换或恢复机器人模式。

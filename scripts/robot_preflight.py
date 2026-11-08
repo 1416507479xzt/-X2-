@@ -36,10 +36,13 @@ def main():
             problems.append(module + ": " + type(exc).__name__ + ": " + str(exc))
     if not problems:
         try:
-            from aimdk_msgs.msg import ProcessedAudioOutput, AudioPlayback
+            from aimdk_msgs.msg import ProcessedAudioOutput, AudioPlayback, FocusResponse
             from aimdk_msgs.srv import RequestAudioFocus, AbandonAudioFocus
             verify_audio_interfaces(ProcessedAudioOutput, AudioPlayback,
                                     RequestAudioFocus, AbandonAudioFocus)
+            focus_fields = set(FocusResponse.get_fields_and_field_types())
+            if not {"pkg_name", "focus_gain"} <= focus_fields:
+                raise ValueError("ROS FocusResponse 缺少 pkg_name 或 focus_gain")
             print("ROS audio message/service fields OK")
         except Exception as exc:
             problems.append("ROS audio interface: " + str(exc))

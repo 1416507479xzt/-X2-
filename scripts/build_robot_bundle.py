@@ -71,6 +71,7 @@ def build(wheelhouse, output):
                    ROOT / "requirements-lock.txt",
                    ROOT / "scripts" / "aimdk_mic_probe.py",
                    ROOT / "scripts" / "aimdk_asr_probe.py",
+                   ROOT / "scripts" / "aimdk_tts_probe.py",
                    ROOT / "scripts" / "robot_preflight.py",
                    ROOT / "scripts" / "run_robot_agent.py",
                    ROOT / "docs" / "zh-CN" / "onsite-deployment.md",
