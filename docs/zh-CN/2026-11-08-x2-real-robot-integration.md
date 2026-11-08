@@ -46,7 +46,7 @@ RuntimeError: Running with asyncio requires installation of 'httpcore[asyncio]'.
 
 切换前，不运行自研程序时机器人能用原生交互回答“现在几点”。先在已加载 AimDK 的 PC2 调用 `SetAgentPropertiesRequest`，将 `AGENT_PROPERTY_RUN_MODE=2` 的值设为 `only_voice`；然后从 PC2 登录内部 PC3，在 **PC3** 执行 `aima em stop-app agent`、`aima em start-app agent`，两条命令返回成功。切换后相同原生问答不再回答，说明本机行为符合预期。服务设置响应本身为 `code=0, status=0 (UNKNOWN)`，不能单凭它判定成功；必须核对行为。
 
-PC2 的 `aima em stop-app agent` 不适用，因为该应用不在 PC2 列表。未加载 AimDK 的新 SSH 终端运行 `ros2 service call` 会显示服务类型无效，先 `source` 环境。**目前尚未实测恢复 `normal` 后的原生问答**；联调结束要在 PC2 设置 `normal`，在 PC3 重新启动 `agent`，再实际问答确认。不要把停止整个原生交互系统当作常规方案。
+PC2 的 `aima em stop-app agent` 不适用，因为该应用不在 PC2 列表。未加载 AimDK 的新 SSH 终端运行 `ros2 service call` 会显示服务类型无效，先 `source` 环境。**21:49 左右已实测恢复 `normal`：**停止自研程序后，在 PC2 设置 `normal`，PC3 的 `stop-app agent`、`start-app agent` 均成功；随后机器人重新用原生语音回答“现在几点”。当前机器人处于原生交互可用状态。以后再次切换仍须按完整流程操作并核对行为。
 
 ### 4. 云端 TTS、扬声器和音频焦点
 
@@ -66,6 +66,6 @@ PC2 的 `aima em stop-app agent` 不适用，因为该应用不在 PC2 列表。
 
 ## 当前验收结论与下一步
 
-已实测：AimDK v1.0.0 内置麦 PCM、一次普通短句 ASR、PC2 云 TTS、优先级 6 的完整扬声器播报与焦点释放、修复版离线依赖预检、`only_voice` 行为切换。尚未实测通过：真机唤醒词、完整 ASR→Mini→TTS 对话、表情与动作、多环节连续演示、`normal` 恢复、赛方统一机器兼容性。请先解决隔离唤醒测试，再推进后续验收。
+已实测：AimDK v1.0.0 内置麦 PCM、一次普通短句 ASR、PC2 云 TTS、优先级 6 的完整扬声器播报与焦点释放、修复版离线依赖预检、`only_voice` 行为切换，以及返回 `normal` 后的原生问答恢复。尚未实测通过：真机唤醒词、完整 ASR→Mini→TTS 对话、表情与动作、多环节连续演示、赛方统一机器兼容性。当前应保持原生交互，下一次自研语音联调前再按官方步骤切换。
 
 完整从新电脑部署步骤见[复现指南](reproduce-on-x2.md)；实时状态摘要见[真机音频验收表](aimdk-v1-robot-audio.md)。历史 IP、SSH 密码和 API Key 均不属于可复现配置，交接时应由新操作者在现场获取。
