@@ -104,6 +104,26 @@ class PlaybackTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(player._has_focus)
         self.assertEqual(published, [])
 
+    async def test_second_identical_release_confirms_v1_focus_result(self):
+        player, _, _ = self.make_player()
+        original_call = player._call
+        release_count = 0
+
+        async def call(client, request):
+            nonlocal release_count
+            if client == "abandon":
+                release_count += 1
+                return SimpleNamespace(
+                    reponse=SimpleNamespace(status=SimpleNamespace(value=1)),
+                    focus_response=SimpleNamespace(focus_gain=release_count == 1))
+            return await original_call(client, request)
+
+        player._call = call
+        await player.begin()
+        await player.end()
+        self.assertEqual(release_count, 2)
+        self.assertFalse(player._has_focus)
+
 
 if __name__ == "__main__":
     unittest.main()

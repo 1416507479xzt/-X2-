@@ -154,14 +154,23 @@ class AimdkPcmPlayer:
                 delay = self._next_publish_time - time.monotonic()
                 if delay > 0:
                     await asyncio.sleep(delay)
-                response = await self._call(self.abandon_client,
-                                            self._focus_request(self.AbandonAudioFocus))
-                status = response.reponse.status.value
-                gain = response.focus_response.focus_gain
-                if status != 1 or gain:
-                    raise AudioFocusError("释放音频焦点结果未确认：status=%s focus_gain=%s" %
-                                          (status, gain))
-                self._has_focus = False
+                # On the tested v1.0.0 robot the first abandon response may
+                # still report focus_gain=True. A second identical request
+                # returned False, confirming that this source no longer owns
+                # focus. Never claim release from status alone.
+                for attempt in range(2):
+                    response = await self._call(
+                        self.abandon_client, self._focus_request(self.AbandonAudioFocus))
+                    status = response.reponse.status.value
+                    gain = response.focus_response.focus_gain
+                    if status == 1 and not gain:
+                        self._has_focus = False
+                        break
+                    if attempt == 0 and status == 1 and gain:
+                        await asyncio.sleep(0.1)
+                        continue
+                    raise AudioFocusError(
+                        "释放音频焦点结果未确认：status=%s focus_gain=%s" % (status, gain))
         finally:
             self._lock.release()
 
